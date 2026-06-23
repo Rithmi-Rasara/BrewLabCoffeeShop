@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "688186844887",
+    "firebase_url": "https://brewlab-ad21a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "brewlab-ad21a",
+    "storage_bucket": "brewlab-ad21a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688186844887:android:a8cbf1cfebe9904d10f292",
+        "android_client_info": {
+          "package_name": "com.nibm.brewlabcoffeeshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHxW8MENxQwy0bHN7VzJ7TKHu2bkiCzPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
