@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Background -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/coffee_bg"
+        android:scaleType="centerCrop" />
+
+    <!-- Dark overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#88000000" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp">
+
+            <!-- HEADER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:background="@drawable/card_bg"
+                android:layout_marginBottom="25dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="☕ Admin Dashboard"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manage Coffee Shop System"
+                    android:textSize="14sp"
+                    android:textColor="#DDFFFFFF"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
+
+            <!-- SECTION 1: PRODUCT MANAGEMENT -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PRODUCT MANAGEMENT"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageProducts"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Manage Products"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="10dp"
+                app:backgroundTint="#C67C4E"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageCategories"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Manage Categories"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#A66A3F"/>
+
+            <!-- SECTION 2: ORDER MANAGEMENT -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ORDER MANAGEMENT"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageOrders"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Manage Orders"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="10dp"
+                app:backgroundTint="#8D6E63"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAssignDelivery"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Assign Delivery"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#5D4037"/>
+
+            <!-- SECTION 3: USERS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USERS And STAFF"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewCustomers"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="View Customers"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="10dp"
+                app:backgroundTint="#6D4C41"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeliveryStaff"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Delivery Staff"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#6D4C41"/>
+
+            <!-- SECTION 4: FINANCE & REPORTS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FINANCE And REPORTS"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPayments"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Payments"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="10dp"
+                app:backgroundTint="#795548"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReports"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Reports"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#4E342E"/>
+
+            <!-- SECTION 5 -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SUPPORT"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Feedback"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                android:layout_marginBottom="25dp"
+                app:backgroundTint="#3E2723"/>
+
+            <!-- LOGOUT -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Logout"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#D32F2F"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
