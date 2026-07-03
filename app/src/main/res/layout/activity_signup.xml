@@ -76,7 +76,6 @@
                 android:padding="15dp"
                 android:inputType="phone" />
 
-            <!-- 🔥 ROLE SELECT ADDED -->
             <Spinner
                 android:id="@+id/spinnerRole"
                 android:layout_width="match_parent"

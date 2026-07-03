@@ -35,7 +35,6 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        // init views
         edtName = findViewById(R.id.edtName);
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);
@@ -55,12 +54,9 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.setCancelable(false);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        getSupportActionBar().hide();
 
-        // 🔥 ROLE SPINNER SETUP
-        String[] roles = {"user", "admin"};
+        String[] roles = {"Customer", "Admin","Delivery Person"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -70,7 +66,6 @@ public class SignupActivity extends AppCompatActivity {
 
         spinnerRole.setAdapter(adapter);
 
-        // SIGNUP CLICK
         btnSignup.setOnClickListener(v -> {
 
             String name = edtName.getText().toString().trim();
@@ -80,7 +75,6 @@ public class SignupActivity extends AppCompatActivity {
             String confirmPassword = edtConfirmPassword.getText().toString().trim();
             String role = spinnerRole.getSelectedItem().toString();
 
-            // VALIDATION
             if (name.isEmpty()) {
                 edtName.setError("Enter Name");
                 return;
