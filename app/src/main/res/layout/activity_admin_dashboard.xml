@@ -3,7 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:background="#120B08">
+=======
+    android:background="@drawable/admin_bg">
+>>>>>>> developer
 
     <LinearLayout
         android:layout_width="match_parent"
