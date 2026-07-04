@@ -10,14 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder> {
 
-    ArrayList<Order> orderList;
+    private ArrayList<Order> orderList;
 
     public OrdersAdapter(ArrayList<Order> orderList) {
         this.orderList = orderList;
@@ -38,28 +37,31 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         Order order = orderList.get(position);
 
-        holder.txtOrderId.setText(order.id);
+        holder.txtOrderId.setText(order.getId());
 
         holder.itemView.setOnClickListener(v -> {
 
             Intent intent = new Intent(v.getContext(), OrderDetailActivity.class);
-            intent.putExtra("orderId", order.id);
+            intent.putExtra("orderId", order.getId());
             v.getContext().startActivity(intent);
         });
 
         holder.btnView.setOnClickListener(v -> {
 
             Intent intent = new Intent(v.getContext(), OrderDetailActivity.class);
-            intent.putExtra("orderId", order.id);
+            intent.putExtra("orderId", order.getId());
             v.getContext().startActivity(intent);
         });
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            orderList.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, orderList.size());
+            int adapterPosition = holder.getAdapterPosition();
 
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                orderList.remove(adapterPosition);
+                notifyItemRemoved(adapterPosition);
+                notifyItemRangeChanged(adapterPosition, orderList.size());
+            }
         });
     }
 

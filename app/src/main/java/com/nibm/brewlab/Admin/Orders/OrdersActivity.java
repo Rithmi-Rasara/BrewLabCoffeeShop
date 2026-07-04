@@ -37,9 +37,9 @@ public class OrdersActivity extends AppCompatActivity {
 
         orderList = new ArrayList<>();
 
-        orderList.add(new Order("1001", "Pending"));
-        orderList.add(new Order("1002", "Pending"));
-        orderList.add(new Order("1003", "Done"));
+        orderList.add(new Order("1001", "Kasun", "1500", "Pending"));
+        orderList.add(new Order("1002", "Nimal", "2500", "Pending"));
+        orderList.add(new Order("1003", "Amal", "3000", "Done"));
 
         OrdersAdapter adapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(adapter);

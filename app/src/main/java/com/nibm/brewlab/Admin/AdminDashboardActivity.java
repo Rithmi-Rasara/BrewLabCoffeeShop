@@ -19,27 +19,31 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.nibm.brewlab.Admin.Category.CategoryActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
-import com.nibm.brewlab.Admin.Delivery.DeliveryDetailsActivity;
-import com.nibm.brewlab.Admin.Delivery.DeliveryPerson;
 import com.nibm.brewlab.Admin.Delivery.ManageDeliveryActivity;
+import com.nibm.brewlab.Admin.Orders.Order;
 import com.nibm.brewlab.Admin.Orders.OrdersActivity;
+import com.nibm.brewlab.Admin.Orders.OrdersAdapter;
 import com.nibm.brewlab.Admin.Product.ManageProductsActivity;
+import com.nibm.brewlab.Admin.Product.Product;
 import com.nibm.brewlab.R;
+
+import java.util.ArrayList;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerOrders, recyclerStock, recyclerFeedback;
 
-    private LinearLayout addProduct,
-            manageOrders,
-            manageCategories,
-            viewCustomers,
-            manageDelivery;
-
+    private LinearLayout addProduct, manageOrders, manageCategories, viewCustomers, manageDelivery;
     private TextView txtAdminName;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
+    private DatabaseReference ordersRef, stockRef, userRef;
+
+    private ArrayList<Order> orderList;
+    private ArrayList<Product> lowStockList;
+
+    private OrdersAdapter ordersAdapter;
+    private LowStockAdapter lowStockAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,18 @@ public class AdminDashboardActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        initViews();
+        setupAdapters();
+
+        loadAdminName();
+        loadRecentOrders();
+        loadLowStock();
+
+        setupClicks();
+    }
+
+    private void initViews() {
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -68,40 +84,118 @@ public class AdminDashboardActivity extends AppCompatActivity {
         recyclerStock.setLayoutManager(new LinearLayoutManager(this));
         recyclerFeedback.setLayoutManager(new LinearLayoutManager(this));
 
-        if (mAuth.getCurrentUser() != null) {
+        orderList = new ArrayList<>();
+        lowStockList = new ArrayList<>();
+    }
 
-            String uid = mAuth.getCurrentUser().getUid();
+    private void setupAdapters() {
 
-            databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("Users")
-                    .child(uid);
+        ordersAdapter = new OrdersAdapter(orderList);
+        lowStockAdapter = new LowStockAdapter(lowStockList);
 
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        recyclerOrders.setAdapter(ordersAdapter);
+        recyclerStock.setAdapter(lowStockAdapter);
+    }
 
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+    private void loadRecentOrders() {
 
-                    if (snapshot.exists()) {
+        ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
-                        String name = snapshot.child("name").getValue(String.class);
+        ordersRef.limitToLast(10)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        if (name != null && !name.isEmpty()) {
-                            txtAdminName.setText(name);
-                        } else {
-                            txtAdminName.setText("Administrator");
+                        orderList.clear();
+
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+
+                            Order order = ds.getValue(Order.class);
+
+                            if (order != null) {
+                                orderList.add(order);
+                            }
                         }
 
-                    } else {
-                        txtAdminName.setText("Administrator");
+                        ordersAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) { }
+                });
+    }
+
+    private void loadLowStock() {
+
+        stockRef = FirebaseDatabase.getInstance().getReference("Products");
+
+        stockRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                lowStockList.clear();
+
+                for (DataSnapshot ds : snapshot.getChildren()) {
+
+                    Product product = ds.getValue(Product.class);
+
+                    if (product != null && product.getStock() != null) {
+
+                        try {
+                            int stockQty = Integer.parseInt(product.getStock());
+
+                            if (stockQty < 10) {
+                                lowStockList.add(product);
+                            }
+
+                        } catch (Exception e) {
+                            // ignore
+                        }
                     }
                 }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                lowStockAdapter.notifyDataSetChanged();
+            }
 
-                }
-            });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    private void loadAdminName() {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            txtAdminName.setText("Administrator");
+            return;
         }
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        userRef = FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(uid);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                String name = snapshot.child("name").getValue(String.class);
+
+                txtAdminName.setText(
+                        (name != null && !name.isEmpty())
+                                ? name
+                                : "Administrator"
+                );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                txtAdminName.setText("Administrator");
+            }
+        });
+    }
+
+    private void setupClicks() {
 
         addProduct.setOnClickListener(v ->
                 startActivity(new Intent(this, ManageProductsActivity.class)));
