@@ -149,7 +149,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
                             }
 
                         } catch (Exception e) {
-                            // ignore
+
                         }
                     }
                 }

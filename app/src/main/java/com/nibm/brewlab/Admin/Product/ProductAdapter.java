@@ -51,7 +51,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.price.setText("Rs. " + product.getPrice());
         holder.category.setText(product.getCategory());
 
-        // 🔥 IMPORTANT: prevent RecyclerView reuse image bug
         holder.productImage.setImageDrawable(null);
 
         String imageName = product.getImageUri();
@@ -71,7 +70,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             holder.productImage.setImageResource(R.drawable.cappuccino);
         }
 
-        // DELETE BUTTON
         holder.btnDelete.setOnClickListener(v -> {
 
             int pos = holder.getAdapterPosition();
@@ -118,7 +116,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
     }
 
-    // 🔥 UPDATE FULL LIST
     public void updateList(ArrayList<Product> newList) {
         productList.clear();
         productList.addAll(newList);
@@ -129,7 +126,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    // 🔍 SEARCH FILTER
     @Override
     public Filter getFilter() {
         return productFilter;
