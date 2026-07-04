@@ -117,8 +117,6 @@ public class LoginActivity extends AppCompatActivity {
 
                                         case "delivery":
                                         case "delivery person":
-                                            // Delivery staff land on their own dashboard,
-                                            // not the admin's "view/approve" details screen.
                                             intent = new Intent(LoginActivity.this,
                                                     DeliveryDashboardActivity.class);
                                             break;
