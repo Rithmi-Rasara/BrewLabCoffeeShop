@@ -76,7 +76,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         return list != null ? list.size() : 0;
     }
 
-    // ================= EDIT DIALOG =================
     private void showEditDialog(CategoryModel model, int position) {
 
         if (context == null) return;
@@ -116,7 +115,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         dialog.show();
     }
 
-    // ================= VIEW HOLDER =================
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView txtName;

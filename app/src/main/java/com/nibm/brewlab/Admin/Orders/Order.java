@@ -8,7 +8,7 @@ public class Order {
     private String status;
 
     public Order() {
-        // Required for Firebase
+
     }
 
     public Order(String id, String customerName, String totalAmount, String status) {

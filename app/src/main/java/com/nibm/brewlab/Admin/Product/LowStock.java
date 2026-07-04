@@ -5,7 +5,6 @@ public class LowStock {
     private String productName;
     private String stockQty;
 
-    // Required empty constructor for Firebase
     public LowStock() {
     }
 
@@ -14,7 +13,6 @@ public class LowStock {
         this.stockQty = stockQty;
     }
 
-    // Getters
     public String getProductName() {
         return productName;
     }
@@ -23,7 +21,6 @@ public class LowStock {
         return stockQty;
     }
 
-    // Setters (IMPORTANT for Firebase + updates)
     public void setProductName(String productName) {
         this.productName = productName;
     }
@@ -32,7 +29,6 @@ public class LowStock {
         this.stockQty = stockQty;
     }
 
-    // Optional helper (VERY useful in adapter)
     public int getStockQtyInt() {
         try {
             return Integer.parseInt(stockQty);
