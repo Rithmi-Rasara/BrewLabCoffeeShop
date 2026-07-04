@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nibm.brewlab.R;
@@ -53,14 +51,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.price.setText("Rs. " + product.getPrice());
         holder.category.setText(product.getCategory());
 
+        // 🔥 IMPORTANT: prevent RecyclerView reuse image bug
+        holder.productImage.setImageDrawable(null);
+
+        String imageName = product.getImageUri();
+
         int imageResId = context.getResources().getIdentifier(
-                product.getImageUri(),
+                imageName,
                 "drawable",
                 context.getPackageName()
         );
 
         Log.d("PRODUCT_IMAGE",
-                "Name = " + product.getImageUri() + " | ID = " + imageResId);
+                "Name = " + imageName + " | ID = " + imageResId);
 
         if (imageResId != 0) {
             holder.productImage.setImageResource(imageResId);
@@ -68,17 +71,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             holder.productImage.setImageResource(R.drawable.cappuccino);
         }
 
+        // DELETE BUTTON
         holder.btnDelete.setOnClickListener(v -> {
 
             int pos = holder.getAdapterPosition();
 
             if (pos != RecyclerView.NO_POSITION) {
+
                 Product removed = productList.get(pos);
 
                 productList.remove(pos);
                 productListFull.remove(removed);
 
                 notifyItemRemoved(pos);
+                notifyItemRangeChanged(pos, productList.size());
 
                 Toast.makeText(context,
                         "Product Deleted",
@@ -112,6 +118,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
     }
 
+    // 🔥 UPDATE FULL LIST
     public void updateList(ArrayList<Product> newList) {
         productList.clear();
         productList.addAll(newList);
@@ -122,6 +129,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    // 🔍 SEARCH FILTER
     @Override
     public Filter getFilter() {
         return productFilter;
@@ -159,6 +167,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
             productList.clear();
             productList.addAll((ArrayList<Product>) results.values);
+
             notifyDataSetChanged();
         }
     };
