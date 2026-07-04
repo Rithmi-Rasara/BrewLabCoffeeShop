@@ -64,6 +64,31 @@
         <activity
             android:name=".Admin.Orders.DoneOrdersActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".Customer.CustomerDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Product.ProductListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Cart.CartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Orders.PlaceOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Orders.MyOrdersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Orders.OrderDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Profile.MyProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Customer.Feedback.FeedbackActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
