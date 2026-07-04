@@ -7,6 +7,16 @@
     android:background="#120B08"
     android:padding="12dp">
 
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Orders"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/searchBox"
         android:layout_width="match_parent"
@@ -14,7 +24,7 @@
         android:background="@drawable/search_bg"
         android:hint="Search orders, products..."
         android:padding="12dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="20dp"
         android:textColor="#FFFFFF"
         android:textColorHint="#BBBBBB"
         android:drawableStart="@android:drawable/ic_menu_search"/>

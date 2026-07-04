@@ -41,14 +41,14 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         productList = new ArrayList<>();
 
-        productList.add(new Product("Cappuccino", "850.00", "Hot Coffee", "Fresh Cappuccino", "cappuccino"));
-        productList.add(new Product("Latte", "900.00", "Hot Coffee", "Creamy Latte", "latte"));
-        productList.add(new Product("Espresso", "700.00", "Hot Coffee", "Strong Espresso", "espresso"));
-        productList.add(new Product("Mocha", "950.00", "Hot Coffee", "Chocolate Mocha", "mocha"));
-        productList.add(new Product("Americano", "750.00", "Hot Coffee", "Classic Americano", "americano"));
-        productList.add(new Product("Cold Brew", "800.00", "Cold Coffee", "Refreshing Cold Brew", "cold_brew"));
-        productList.add(new Product("Iced Latte", "950.00", "Cold Coffee", "Iced Latte", "iced_latte"));
-        productList.add(new Product("Caramel Frappé", "1200.00", "Frappé", "Caramel Frappé", "caramel_frappe"));
+        productList.add(new Product("Cappuccino", "850.00", "Hot Coffee", "Fresh Cappuccino", "cappuccino", "image_url_here"));
+        productList.add(new Product("Latte", "900.00", "Hot Coffee", "Creamy Latte", "latte", "image_url_here"));
+        productList.add(new Product("Espresso", "700.00", "Hot Coffee", "Strong Espresso", "espresso", "image_url_here"));
+        productList.add(new Product("Mocha", "950.00", "Hot Coffee", "Chocolate Mocha", "mocha", "image_url_here"));
+        productList.add(new Product("Americano", "750.00", "Hot Coffee", "Classic Americano", "americano", "image_url_here"));
+        productList.add(new Product("Cold Brew", "800.00", "Cold Coffee", "Refreshing Cold Brew", "cold_brew", "image_url_here"));
+        productList.add(new Product("Iced Latte", "950.00", "Cold Coffee", "Iced Latte", "iced_latte", "image_url_here"));
+        productList.add(new Product("Caramel Frappé", "1200.00", "Frappé", "Caramel Frappé", "caramel_frappe", "image_url_here"));
 
         adapter = new ProductAdapter(this, productList);
         recyclerView.setAdapter(adapter);
