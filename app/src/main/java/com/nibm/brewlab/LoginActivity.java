@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.nibm.brewlab.Admin.AdminDashboardActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
 import com.nibm.brewlab.Admin.Delivery.DeliveryDetailsActivity;
+import com.nibm.brewlab.Customer.CustomerDashboardActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -112,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         case "customer":
                                             intent = new Intent(LoginActivity.this,
-                                                    CustomersActivity.class);
+                                                    CustomerDashboardActivity.class);
                                             break;
 
                                         case "delivery":
