@@ -10,10 +10,13 @@ public class Product {
     private String imageUri;
     private String stock;
 
-    public Product() {}
+    public Product() {
+        // Required for Firebase
+    }
 
     public Product(String name, String price, String category,
                    String desc, String imageUri, String stock) {
+
         this.name = name;
         this.price = price;
         this.category = category;
@@ -23,23 +26,19 @@ public class Product {
     }
 
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
     public String getPrice() { return price; }
-    public void setPrice(String price) { this.price = price; }
-
     public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-
     public String getDesc() { return desc; }
-    public void setDesc(String desc) { this.desc = desc; }
-
     public String getImageUri() { return imageUri; }
-    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
-
     public String getStock() { return stock; }
+
+
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setPrice(String price) { this.price = price; }
+    public void setCategory(String category) { this.category = category; }
+    public void setDesc(String desc) { this.desc = desc; }
+    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
     public void setStock(String stock) { this.stock = stock; }
 }

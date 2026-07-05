@@ -1,6 +1,7 @@
 package com.nibm.brewlab.Admin.Product;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,16 +30,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public ProductAdapter(Context context, ArrayList<Product> productList) {
         this.context = context;
         this.productList = productList;
-        this.productListFull = new ArrayList<>(productList);
+
+        this.productListFull = new ArrayList<>();
+        this.productListFull.addAll(productList);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.product_item, parent, false);
-
         return new ViewHolder(view);
     }
 
@@ -51,8 +52,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.price.setText("Rs. " + product.getPrice());
         holder.category.setText(product.getCategory());
 
-        holder.productImage.setImageDrawable(null);
-
         String imageName = product.getImageUri();
 
         int imageResId = context.getResources().getIdentifier(
@@ -60,9 +59,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 "drawable",
                 context.getPackageName()
         );
-
-        Log.d("PRODUCT_IMAGE",
-                "Name = " + imageName + " | ID = " + imageResId);
 
         if (imageResId != 0) {
             holder.productImage.setImageResource(imageResId);
@@ -84,9 +80,27 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 notifyItemRemoved(pos);
                 notifyItemRangeChanged(pos, productList.size());
 
-                Toast.makeText(context,
-                        "Product Deleted",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.btnUpdate.setOnClickListener(v -> {
+
+            int pos = holder.getAdapterPosition();
+
+            if (pos != RecyclerView.NO_POSITION) {
+
+                Product p = productList.get(pos);
+
+                Intent intent = new Intent(context, AddProductActivity.class);
+
+                intent.putExtra("id", p.getId());
+                intent.putExtra("name", p.getName());
+                intent.putExtra("price", p.getPrice());
+                intent.putExtra("category", p.getCategory());
+                intent.putExtra("desc", p.getDesc());
+
+                context.startActivity(intent);
             }
         });
     }
@@ -108,22 +122,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             name = itemView.findViewById(R.id.productName);
             price = itemView.findViewById(R.id.productPrice);
             category = itemView.findViewById(R.id.productCategory);
-
             productImage = itemView.findViewById(R.id.productImage);
 
             btnUpdate = itemView.findViewById(R.id.btnUpdate);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
-    }
-
-    public void updateList(ArrayList<Product> newList) {
-        productList.clear();
-        productList.addAll(newList);
-
-        productListFull.clear();
-        productListFull.addAll(newList);
-
-        notifyDataSetChanged();
     }
 
     @Override
@@ -142,19 +145,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 filteredList.addAll(productListFull);
             } else {
 
-                String filterPattern = constraint.toString().toLowerCase().trim();
+                String filter = constraint.toString().toLowerCase().trim();
 
-                for (Product item : productListFull) {
-                    if (item.getName() != null &&
-                            item.getName().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(item);
+                for (Product p : productListFull) {
+                    if (p.getName().toLowerCase().contains(filter)) {
+                        filteredList.add(p);
                     }
                 }
             }
 
             FilterResults results = new FilterResults();
             results.values = filteredList;
-
             return results;
         }
 
@@ -163,7 +164,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
             productList.clear();
             productList.addAll((ArrayList<Product>) results.values);
-
             notifyDataSetChanged();
         }
     };
