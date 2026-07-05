@@ -12,7 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BrewLab"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Admin.Inventory.InventoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Admin.Inventory.AddInventoryActivity"
+            android:exported="false" />
         <activity
             android:name=".GetStartedActivity"
             android:exported="true">

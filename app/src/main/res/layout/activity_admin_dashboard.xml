@@ -275,6 +275,24 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/manageInventory"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/card_bg"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Inventory Items"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
         </GridLayout>
 
         <TextView

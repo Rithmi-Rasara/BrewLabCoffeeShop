@@ -11,8 +11,11 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nibm.brewlab.R;
 
 public class AddProductActivity extends AppCompatActivity {
@@ -21,16 +24,19 @@ public class AddProductActivity extends AppCompatActivity {
     Button btnAdd, btnSelectImage;
     ImageView imgProduct;
 
-    Uri imageUri = null;
+    Uri imageUri;
+
+    boolean isUpdate = false;
+    String productId;
+
+    DatabaseReference ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        ref = FirebaseDatabase.getInstance().getReference("Products");
 
         edtName = findViewById(R.id.edtName);
         edtPrice = findViewById(R.id.edtPrice);
@@ -39,13 +45,27 @@ public class AddProductActivity extends AppCompatActivity {
 
         btnAdd = findViewById(R.id.btnAdd);
         btnSelectImage = findViewById(R.id.btnChooseImage);
-
         imgProduct = findViewById(R.id.imgProduct);
 
+        Intent intent = getIntent();
+
+        if (intent.getStringExtra("id") != null) {
+
+            isUpdate = true;
+            btnAdd.setText("Update Product");
+
+            productId = intent.getStringExtra("id");
+
+            edtName.setText(intent.getStringExtra("name"));
+            edtPrice.setText(intent.getStringExtra("price"));
+            edtCategory.setText(intent.getStringExtra("category"));
+            edtDesc.setText(intent.getStringExtra("desc"));
+        }
+
         btnSelectImage.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            imagePickerLauncher.launch(intent);
+            Intent i = new Intent(Intent.ACTION_PICK);
+            i.setType("image/*");
+            imagePicker.launch(i);
         });
 
         btnAdd.setOnClickListener(v -> {
@@ -60,24 +80,46 @@ public class AddProductActivity extends AppCompatActivity {
                 return;
             }
 
-            if (imageUri == null) {
-                Toast.makeText(this, "Please select product image", Toast.LENGTH_SHORT).show();
-                return;
+            Product product = new Product(
+                    name,
+                    price,
+                    category,
+                    desc,
+                    "image",
+                    "0"
+            );
+
+            if (isUpdate) {
+
+                ref.child(productId).setValue(product)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(this, "Update Failed", Toast.LENGTH_SHORT).show()
+                        );
+
+            } else {
+
+                String id = ref.push().getKey();
+
+                ref.child(id).setValue(product)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(this, "Add Failed", Toast.LENGTH_SHORT).show()
+                        );
             }
-
-            Toast.makeText(this,
-                    "Product Added Successfully",
-                    Toast.LENGTH_SHORT).show();
-
-            clearFields();
         });
     }
 
-    private final ActivityResultLauncher<Intent> imagePickerLauncher =
+    private final ActivityResultLauncher<Intent> imagePicker =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-
                         if (result.getResultCode() == Activity.RESULT_OK &&
                                 result.getData() != null) {
 
@@ -85,14 +127,4 @@ public class AddProductActivity extends AppCompatActivity {
                             imgProduct.setImageURI(imageUri);
                         }
                     });
-
-    private void clearFields() {
-        edtName.setText("");
-        edtPrice.setText("");
-        edtCategory.setText("");
-        edtDesc.setText("");
-
-        imgProduct.setImageResource(R.drawable.ic_image);
-        imageUri = null;
-    }
 }

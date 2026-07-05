@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.nibm.brewlab.Admin.Category.CategoryActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
 import com.nibm.brewlab.Admin.Delivery.ManageDeliveryActivity;
+import com.nibm.brewlab.Admin.Inventory.InventoryActivity;
 import com.nibm.brewlab.Admin.Orders.Order;
 import com.nibm.brewlab.Admin.Orders.OrdersActivity;
 import com.nibm.brewlab.Admin.Orders.OrdersAdapter;
@@ -33,7 +34,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerOrders, recyclerStock, recyclerFeedback;
 
-    private LinearLayout addProduct, manageOrders, manageCategories, viewCustomers, manageDelivery;
+    private LinearLayout addProduct;
+    private LinearLayout manageOrders;
+    private LinearLayout manageCategories;
+    private LinearLayout viewCustomers;
+    private LinearLayout manageDelivery;
+    private LinearLayout manageInventory;
+
     private TextView txtAdminName;
 
     private FirebaseAuth mAuth;
@@ -80,6 +87,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         viewCustomers = findViewById(R.id.viewCustomers);
         manageDelivery = findViewById(R.id.manageDelivery);
 
+        // Inventory Button
+        manageInventory = findViewById(R.id.manageInventory);
+
         recyclerOrders.setLayoutManager(new LinearLayoutManager(this));
         recyclerStock.setLayoutManager(new LinearLayoutManager(this));
         recyclerFeedback.setLayoutManager(new LinearLayoutManager(this));
@@ -121,7 +131,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) { }
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
                 });
     }
 
@@ -142,14 +153,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     if (product != null && product.getStock() != null) {
 
                         try {
-                            int stockQty = Integer.parseInt(product.getStock());
+
+                            int stockQty =
+                                    Integer.parseInt(product.getStock());
 
                             if (stockQty < 10) {
                                 lowStockList.add(product);
                             }
 
                         } catch (Exception e) {
-
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -158,7 +171,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 
@@ -169,47 +183,73 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return;
         }
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String uid = FirebaseAuth.getInstance()
+                .getCurrentUser()
+                .getUid();
 
         userRef = FirebaseDatabase.getInstance()
                 .getReference("Users")
                 .child(uid);
 
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+        userRef.addListenerForSingleValueEvent(
+                new ValueEventListener() {
 
-                String name = snapshot.child("name").getValue(String.class);
+                    @Override
+                    public void onDataChange(
+                            @NonNull DataSnapshot snapshot) {
 
-                txtAdminName.setText(
-                        (name != null && !name.isEmpty())
-                                ? name
-                                : "Administrator"
-                );
-            }
+                        String name =
+                                snapshot.child("name")
+                                        .getValue(String.class);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                txtAdminName.setText("Administrator");
-            }
-        });
+                        txtAdminName.setText(
+                                (name != null && !name.isEmpty())
+                                        ? name
+                                        : "Administrator"
+                        );
+                    }
+
+                    @Override
+                    public void onCancelled(
+                            @NonNull DatabaseError error) {
+
+                        txtAdminName.setText("Administrator");
+                    }
+                });
     }
 
     private void setupClicks() {
 
         addProduct.setOnClickListener(v ->
-                startActivity(new Intent(this, ManageProductsActivity.class)));
+                startActivity(new Intent(
+                        this,
+                        ManageProductsActivity.class)));
 
         manageOrders.setOnClickListener(v ->
-                startActivity(new Intent(this, OrdersActivity.class)));
+                startActivity(new Intent(
+                        this,
+                        OrdersActivity.class)));
 
         manageCategories.setOnClickListener(v ->
-                startActivity(new Intent(this, CategoryActivity.class)));
+                startActivity(new Intent(
+                        this,
+                        CategoryActivity.class)));
 
         viewCustomers.setOnClickListener(v ->
-                startActivity(new Intent(this, CustomersActivity.class)));
+                startActivity(new Intent(
+                        this,
+                        CustomersActivity.class)));
 
         manageDelivery.setOnClickListener(v ->
-                startActivity(new Intent(this, ManageDeliveryActivity.class)));
+                startActivity(new Intent(
+                        this,
+                        ManageDeliveryActivity.class)));
+
+        // Inventory Page
+        manageInventory.setOnClickListener(v ->
+                startActivity(new Intent(
+                        AdminDashboardActivity.this,
+                        InventoryActivity.class)));
     }
 }
+
