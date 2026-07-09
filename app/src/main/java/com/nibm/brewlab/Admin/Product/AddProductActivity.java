@@ -11,11 +11,9 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 public class AddProductActivity extends AppCompatActivity {
@@ -25,18 +23,19 @@ public class AddProductActivity extends AppCompatActivity {
     ImageView imgProduct;
 
     Uri imageUri;
+    String oldImage = "";
 
     boolean isUpdate = false;
     String productId;
 
-    DatabaseReference ref;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
-        ref = FirebaseDatabase.getInstance().getReference("Products");
+        db = FirebaseFirestore.getInstance();
 
         edtName = findViewById(R.id.edtName);
         edtPrice = findViewById(R.id.edtPrice);
@@ -49,7 +48,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent.getStringExtra("id") != null) {
+        if (intent.hasExtra("id")) {
 
             isUpdate = true;
             btnAdd.setText("Update Product");
@@ -60,6 +59,12 @@ public class AddProductActivity extends AppCompatActivity {
             edtPrice.setText(intent.getStringExtra("price"));
             edtCategory.setText(intent.getStringExtra("category"));
             edtDesc.setText(intent.getStringExtra("desc"));
+            oldImage = intent.getStringExtra("imageUri");
+
+            if (oldImage != null && !oldImage.isEmpty()) {
+                imageUri = Uri.parse(oldImage);
+                imgProduct.setImageURI(imageUri);
+            }
         }
 
         btnSelectImage.setOnClickListener(v -> {
@@ -68,52 +73,61 @@ public class AddProductActivity extends AppCompatActivity {
             imagePicker.launch(i);
         });
 
-        btnAdd.setOnClickListener(v -> {
+        btnAdd.setOnClickListener(v -> saveProduct());
+    }
 
-            String name = edtName.getText().toString().trim();
-            String price = edtPrice.getText().toString().trim();
-            String category = edtCategory.getText().toString().trim();
-            String desc = edtDesc.getText().toString().trim();
+    private void saveProduct() {
 
-            if (name.isEmpty() || price.isEmpty()) {
-                Toast.makeText(this, "Name & Price required", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        String name = edtName.getText().toString().trim();
+        String price = edtPrice.getText().toString().trim();
+        String category = edtCategory.getText().toString().trim();
+        String desc = edtDesc.getText().toString().trim();
 
-            Product product = new Product(
-                    name,
-                    price,
-                    category,
-                    desc,
-                    "image",
-                    "0"
-            );
+        if (name.isEmpty() || price.isEmpty()) {
+            Toast.makeText(this, "Name & Price required", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            if (isUpdate) {
+        String image;
 
-                ref.child(productId).setValue(product)
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
-                            finish();
-                        })
-                        .addOnFailureListener(e ->
-                                Toast.makeText(this, "Update Failed", Toast.LENGTH_SHORT).show()
-                        );
+        if (imageUri != null) {
+            image = imageUri.toString();
+        } else {
+            image = oldImage;
+        }
 
-            } else {
+        Product product = new Product(
+                name,
+                price,
+                category,
+                desc,
+                image,
+                "0"
+        );
 
-                String id = ref.push().getKey();
+        if (isUpdate) {
 
-                ref.child(id).setValue(product)
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
-                            finish();
-                        })
-                        .addOnFailureListener(e ->
-                                Toast.makeText(this, "Add Failed", Toast.LENGTH_SHORT).show()
-                        );
-            }
-        });
+            db.collection("Products")
+                    .document(productId)
+                    .set(product)
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        } else {
+
+            db.collection("Products")
+                    .add(product)
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
     }
 
     private final ActivityResultLauncher<Intent> imagePicker =

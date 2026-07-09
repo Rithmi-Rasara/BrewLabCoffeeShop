@@ -15,6 +15,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.database.ValueEventListener;
 
 import com.nibm.brewlab.Admin.Category.CategoryActivity;
@@ -87,7 +89,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         viewCustomers = findViewById(R.id.viewCustomers);
         manageDelivery = findViewById(R.id.manageDelivery);
 
-        // Inventory Button
         manageInventory = findViewById(R.id.manageInventory);
 
         recyclerOrders.setLayoutManager(new LinearLayoutManager(this));
@@ -138,42 +139,62 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadLowStock() {
 
-        stockRef = FirebaseDatabase.getInstance().getReference("Products");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        stockRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+        db.collection("Inventory")
+                .addSnapshotListener((value, error) -> {
 
-                lowStockList.clear();
+                    if(error != null || value == null){
+                        return;
+                    }
 
-                for (DataSnapshot ds : snapshot.getChildren()) {
+                    lowStockList.clear();
 
-                    Product product = ds.getValue(Product.class);
+                    for(DocumentSnapshot doc : value.getDocuments()){
 
-                    if (product != null && product.getStock() != null) {
+                        String name = doc.getString("name");
+                        Object qtyObject = doc.get("quantity");
+                        int quantity = 0;
 
-                        try {
+                        if(qtyObject instanceof Long){
 
-                            int stockQty =
-                                    Integer.parseInt(product.getStock());
+                            quantity = ((Long) qtyObject).intValue();
 
-                            if (stockQty < 10) {
-                                lowStockList.add(product);
+                        }
+
+                        else if(qtyObject instanceof Double){
+
+                            quantity = ((Double) qtyObject).intValue();
+
+                        }
+
+                        else if(qtyObject instanceof String){
+
+                            try {
+                                quantity = Integer.parseInt(
+                                        qtyObject.toString()
+                                );
+                            }catch(Exception e){
+
+                                quantity = 0;
+
                             }
+                        }
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if(quantity <= 10){
+
+                            Product product = new Product();
+                            product.setName(name);
+                            product.setStock(
+                                    String.valueOf(quantity)
+                            );
+
+                            lowStockList.add(product);
                         }
                     }
-                }
+                    lowStockAdapter.notifyDataSetChanged();
 
-                lowStockAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                });
     }
 
     private void loadAdminName() {
@@ -245,7 +266,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         this,
                         ManageDeliveryActivity.class)));
 
-        // Inventory Page
         manageInventory.setOnClickListener(v ->
                 startActivity(new Intent(
                         AdminDashboardActivity.this,

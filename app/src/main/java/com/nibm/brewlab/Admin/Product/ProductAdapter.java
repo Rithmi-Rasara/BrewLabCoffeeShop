@@ -2,7 +2,6 @@ package com.nibm.brewlab.Admin.Product;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,12 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -27,19 +28,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     ArrayList<Product> productList;
     ArrayList<Product> productListFull;
 
+    FirebaseFirestore db;
+
     public ProductAdapter(Context context, ArrayList<Product> productList) {
+
         this.context = context;
         this.productList = productList;
-
         this.productListFull = new ArrayList<>();
-        this.productListFull.addAll(productList);
+
+        db = FirebaseFirestore.getInstance();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.product_item, parent, false);
+
         return new ViewHolder(view);
     }
 
@@ -52,56 +58,49 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.price.setText("Rs. " + product.getPrice());
         holder.category.setText(product.getCategory());
 
-        String imageName = product.getImageUri();
+        String image = product.getImageUri();
 
-        int imageResId = context.getResources().getIdentifier(
-                imageName,
-                "drawable",
-                context.getPackageName()
-        );
+        if(image != null && !image.isEmpty()) {
 
-        if (imageResId != 0) {
-            holder.productImage.setImageResource(imageResId);
-        } else {
+            Glide.with(context)
+                    .load(image)
+                    .into(holder.productImage);
+
+        }
+        else {
+
             holder.productImage.setImageResource(R.drawable.cappuccino);
+
         }
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            int pos = holder.getAdapterPosition();
-
-            if (pos != RecyclerView.NO_POSITION) {
-
-                Product removed = productList.get(pos);
-
-                productList.remove(pos);
-                productListFull.remove(removed);
-
-                notifyItemRemoved(pos);
-                notifyItemRangeChanged(pos, productList.size());
-
-                Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
-            }
+            db.collection("Products")
+                    .document(product.getId())
+                    .delete()
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(context,
+                                    "Deleted Successfully",
+                                    Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context,
+                                    e.getMessage(),
+                                    Toast.LENGTH_SHORT).show());
         });
 
+        // UPDATE
         holder.btnUpdate.setOnClickListener(v -> {
 
-            int pos = holder.getAdapterPosition();
+            Intent intent = new Intent(context, UpdateProductActivity.class);
 
-            if (pos != RecyclerView.NO_POSITION) {
+            intent.putExtra("id", product.getId());
+            intent.putExtra("name", product.getName());
+            intent.putExtra("price", product.getPrice());
+            intent.putExtra("category", product.getCategory());
+            intent.putExtra("desc", product.getDesc());
+            intent.putExtra("imageUri", product.getImageUri());
 
-                Product p = productList.get(pos);
-
-                Intent intent = new Intent(context, AddProductActivity.class);
-
-                intent.putExtra("id", p.getId());
-                intent.putExtra("name", p.getName());
-                intent.putExtra("price", p.getPrice());
-                intent.putExtra("category", p.getCategory());
-                intent.putExtra("desc", p.getDesc());
-
-                context.startActivity(intent);
-            }
+            context.startActivity(intent);
         });
     }
 
@@ -139,32 +138,46 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            ArrayList<Product> filteredList = new ArrayList<>();
+            ArrayList<Product> filtered = new ArrayList<>();
+
+            if (productListFull.isEmpty()) {
+                productListFull.addAll(productList);
+            }
 
             if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(productListFull);
+
+                filtered.addAll(productListFull);
+
             } else {
 
-                String filter = constraint.toString().toLowerCase().trim();
+                String text = constraint.toString().toLowerCase().trim();
 
                 for (Product p : productListFull) {
-                    if (p.getName().toLowerCase().contains(filter)) {
-                        filteredList.add(p);
+
+                    if (p.getName().toLowerCase().contains(text)) {
+                        filtered.add(p);
                     }
                 }
             }
 
             FilterResults results = new FilterResults();
-            results.values = filteredList;
+            results.values = filtered;
+
             return results;
         }
 
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
 
             productList.clear();
             productList.addAll((ArrayList<Product>) results.values);
             notifyDataSetChanged();
         }
     };
+
+    public void updateFullList() {
+        productListFull.clear();
+        productListFull.addAll(productList);
+    }
 }

@@ -2,23 +2,28 @@ package com.nibm.brewlab.Admin.Inventory;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class InventoryActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private InventoryAdapter adapter;
-    private List<InventoryItem> list;
+    RecyclerView recyclerView;
+    InventoryAdapter adapter;
+    ArrayList<InventoryItem> list;
+    FirebaseFirestore db;
+    EditText searchInventory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,26 +35,117 @@ public class InventoryActivity extends AppCompatActivity {
         }
 
         recyclerView = findViewById(R.id.recyclerInventory);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
 
         list = new ArrayList<>();
-
-        list.add(new InventoryItem("1", "Coffee Beans", 50));
-        list.add(new InventoryItem("2", "Milk", 8));
-        list.add(new InventoryItem("3", "Sugar", 25));
-        list.add(new InventoryItem("4", "Chocolate Syrup", 5));
-        list.add(new InventoryItem("5", "Paper Cups", 100));
 
         adapter = new InventoryAdapter(list);
         recyclerView.setAdapter(adapter);
 
+        db = FirebaseFirestore.getInstance();
+
+        searchInventory = findViewById(R.id.search_inventory);
+
+        searchInventory.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(
+                    CharSequence s,
+                    int start,
+                    int count,
+                    int after) {
+            }
+
+            @Override
+            public void onTextChanged(
+                    CharSequence s,
+                    int start,
+                    int before,
+                    int count) {
+
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        loadInventory();
+
         FloatingActionButton btnAddInventory =
                 findViewById(R.id.btnAddInventory);
 
-        btnAddInventory.setOnClickListener(v ->
-                startActivity(new Intent(
-                        InventoryActivity.this,
-                        AddInventoryActivity.class
-                )));
+        btnAddInventory.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    InventoryActivity.this,
+                    AddInventoryActivity.class
+            );
+
+            startActivity(intent);
+        });
+    }
+
+    private void loadInventory() {
+
+        db.collection("Inventory")
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null || value == null) {
+                        return;
+                    }
+
+                    list.clear();
+
+                    for (DocumentSnapshot doc : value.getDocuments()) {
+
+                        String name = doc.getString("name");
+
+                        Object qtyObject = doc.get("quantity");
+
+                        int quantity = 0;
+
+                        if (qtyObject instanceof Long) {
+
+                            quantity =
+                                    ((Long) qtyObject).intValue();
+
+                        } else if (qtyObject instanceof Double) {
+
+                            quantity =
+                                    ((Double) qtyObject).intValue();
+
+                        } else if (qtyObject instanceof String) {
+
+                            try {
+
+                                quantity =
+                                        Integer.parseInt(
+                                                qtyObject.toString()
+                                        );
+
+                            } catch (Exception e) {
+
+                                quantity = 0;
+                            }
+                        }
+
+                        InventoryItem item =
+                                new InventoryItem(
+                                        doc.getId(),
+                                        name,
+                                        quantity
+                                );
+
+                        list.add(item);
+                    }
+
+                    adapter.updateFullList();
+                    adapter.notifyDataSetChanged();
+                });
     }
 }

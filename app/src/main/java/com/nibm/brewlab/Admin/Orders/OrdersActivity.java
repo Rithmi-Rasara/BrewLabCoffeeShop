@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -17,17 +19,18 @@ public class OrdersActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<Order> orderList;
 
-    Button pendingOrders;
-    Button doneOrders;
+    Button pendingOrders, doneOrders;
+
+    OrdersAdapter adapter;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null)
             getSupportActionBar().hide();
-        }
 
         recyclerView = findViewById(R.id.ordersRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -36,22 +39,39 @@ public class OrdersActivity extends AppCompatActivity {
         doneOrders = findViewById(R.id.btnCompleted);
 
         orderList = new ArrayList<>();
-
-        orderList.add(new Order("1001", "Kasun", "1500", "Pending"));
-        orderList.add(new Order("1002", "Nimal", "2500", "Pending"));
-        orderList.add(new Order("1003", "Amal", "3000", "Done"));
-
-        OrdersAdapter adapter = new OrdersAdapter(orderList);
+        adapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(adapter);
 
-        pendingOrders.setOnClickListener(v -> {
-            Intent intent = new Intent(OrdersActivity.this, PendingOrdersActivity.class);
-            startActivity(intent);
-        });
+        db = FirebaseFirestore.getInstance();
 
-        doneOrders.setOnClickListener(v -> {
-            Intent intent = new Intent(OrdersActivity.this, DoneOrdersActivity.class);
-            startActivity(intent);
-        });
+        loadOrders();
+
+        pendingOrders.setOnClickListener(v ->
+                startActivity(new Intent(this, PendingOrdersActivity.class)));
+
+        doneOrders.setOnClickListener(v ->
+                startActivity(new Intent(this, DoneOrdersActivity.class)));
+    }
+
+    private void loadOrders() {
+
+        db.collection("Orders")
+                .addSnapshotListener((value, error) -> {
+
+                    if (value == null) return;
+
+                    orderList.clear();
+
+                    for (DocumentSnapshot doc : value.getDocuments()) {
+
+                        Order order = doc.toObject(Order.class);
+
+                        if (order != null) {
+                            orderList.add(order);
+                        }
+                    }
+
+                    adapter.notifyDataSetChanged();
+                });
     }
 }

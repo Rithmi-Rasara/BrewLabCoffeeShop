@@ -10,13 +10,28 @@ public class Product {
     private String imageUri;
     private String stock;
 
-    public Product() {
-        // Required for Firebase
-    }
+    public Product() { }
 
     public Product(String name, String price, String category,
                    String desc, String imageUri, String stock) {
 
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.desc = desc;
+        this.imageUri = imageUri;
+        this.stock = stock;
+    }
+
+    public Product(String id,
+                   String name,
+                   String price,
+                   String category,
+                   String desc,
+                   String imageUri,
+                   String stock) {
+
+        this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
