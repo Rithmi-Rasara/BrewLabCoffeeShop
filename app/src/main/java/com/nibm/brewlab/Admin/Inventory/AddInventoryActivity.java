@@ -2,73 +2,125 @@ package com.nibm.brewlab.Admin.Inventory;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddInventoryActivity extends AppCompatActivity {
 
     private EditText etName, etQty;
     private Button btnAdd;
 
-    private DatabaseReference databaseReference;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_add_inventory);
 
-        if (getSupportActionBar() != null) {
+        if(getSupportActionBar()!=null){
+
             getSupportActionBar().hide();
+
         }
 
         etName = findViewById(R.id.etItemName);
         etQty = findViewById(R.id.etItemQty);
+
         btnAdd = findViewById(R.id.btnAddItem);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("inventory");
+        db = FirebaseFirestore.getInstance();
 
         btnAdd.setOnClickListener(v -> addItem());
+
     }
+    private void addItem(){
 
-    private void addItem() {
+        String name = etName.getText()
+                .toString()
+                .trim();
 
-        String name = etName.getText().toString().trim();
-        String qtyStr = etQty.getText().toString().trim();
+        String qtyText = etQty.getText()
+                .toString()
+                .trim();
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(qtyStr)) {
-            Toast.makeText(this, "Fill all fields", Toast.LENGTH_SHORT).show();
+        if(TextUtils.isEmpty(name) ||
+                TextUtils.isEmpty(qtyText)){
+
+            Toast.makeText(
+                    this,
+                    "Fill all fields",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
-        }
 
+        }
         int quantity;
 
         try {
-            quantity = Integer.parseInt(qtyStr);
-        } catch (Exception e) {
-            Toast.makeText(this, "Invalid quantity", Toast.LENGTH_SHORT).show();
+
+            quantity = Integer.parseInt(qtyText);
+
+        }catch(Exception e){
+
+            Toast.makeText(
+                    this,
+                    "Invalid Quantity",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
 
-        String id = databaseReference.push().getKey();
+        Map<String,Object> item = new HashMap<>();
 
-        InventoryItem item = new InventoryItem(id, name, quantity);
+        item.put("name", name);
 
-        databaseReference.child(id).setValue(item)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Item Added", Toast.LENGTH_SHORT).show();
+        item.put("quantity", quantity);
 
-                    if (quantity <= 10) {
-                        Toast.makeText(this, "⚠️ Low Stock!", Toast.LENGTH_LONG).show();
+        db.collection("Inventory")
+
+                .add(item)
+
+                .addOnSuccessListener(documentReference -> {
+
+                    Toast.makeText(
+                            this,
+                            "Inventory Item Added",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    if(quantity <= 10){
+
+                        Toast.makeText(
+                                this,
+                                "⚠️ Low Stock Alert!",
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
 
                     etName.setText("");
+
                     etQty.setText("");
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Error : " + e.getMessage(),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                });
     }
 }

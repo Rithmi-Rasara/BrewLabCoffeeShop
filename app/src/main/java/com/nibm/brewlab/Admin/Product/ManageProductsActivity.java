@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -24,49 +26,144 @@ public class ManageProductsActivity extends AppCompatActivity {
     ArrayList<Product> productList;
     ProductAdapter adapter;
 
+    FirebaseFirestore db;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_products);
 
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
+
+        // Connect Views
         recyclerView = findViewById(R.id.recyclerView);
         searchBox = findViewById(R.id.searchBox);
         addBtn = findViewById(R.id.addBtn);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
+
 
         productList = new ArrayList<>();
 
-        productList.add(new Product("Cappuccino", "850.00", "Hot Coffee", "Fresh Cappuccino", "cappuccino", "image_url_here"));
-        productList.add(new Product("Latte", "900.00", "Hot Coffee", "Creamy Latte", "latte", "image_url_here"));
-        productList.add(new Product("Espresso", "700.00", "Hot Coffee", "Strong Espresso", "espresso", "image_url_here"));
-        productList.add(new Product("Mocha", "950.00", "Hot Coffee", "Chocolate Mocha", "mocha", "image_url_here"));
-        productList.add(new Product("Americano", "750.00", "Hot Coffee", "Classic Americano", "americano", "image_url_here"));
-        productList.add(new Product("Cold Brew", "800.00", "Cold Coffee", "Refreshing Cold Brew", "cold_brew", "image_url_here"));
-        productList.add(new Product("Iced Latte", "950.00", "Cold Coffee", "Iced Latte", "iced_latte", "image_url_here"));
-        productList.add(new Product("Caramel Frappé", "1200.00", "Frappé", "Caramel Frappé", "caramel_frappe", "image_url_here"));
 
-        adapter = new ProductAdapter(this, productList);
+        adapter = new ProductAdapter(
+                this,
+                productList
+        );
+
         recyclerView.setAdapter(adapter);
 
-        addBtn.setOnClickListener(v ->
-                startActivity(new Intent(this, AddProductActivity.class)));
 
+        db = FirebaseFirestore.getInstance();
+
+
+        // Load products from Firestore
+        loadProducts();
+
+
+
+        // Open Add Product page
+        addBtn.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    ManageProductsActivity.this,
+                    AddProductActivity.class
+            );
+
+            startActivity(intent);
+
+        });
+
+
+
+        // Search
         searchBox.addTextChangedListener(new TextWatcher() {
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.getFilter().filter(s.toString());
+            public void beforeTextChanged(
+                    CharSequence s,
+                    int start,
+                    int count,
+                    int after
+            ) {
+
             }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void onTextChanged(
+                    CharSequence s,
+                    int start,
+                    int before,
+                    int count
+            ) {
+
+                adapter.getFilter()
+                        .filter(s.toString());
+
+            }
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
         });
+
     }
+
+
+
+    private void loadProducts() {
+
+
+        db.collection("Products")
+                .addSnapshotListener((value, error) -> {
+
+
+                    if(error != null || value == null){
+                        return;
+                    }
+
+
+                    productList.clear();
+
+
+
+                    for(DocumentSnapshot doc : value.getDocuments()){
+
+
+                        Product product =
+                                doc.toObject(Product.class);
+
+
+
+                        if(product != null){
+
+
+                            product.setId(
+                                    doc.getId()
+                            );
+
+
+                            productList.add(product);
+
+                        }
+
+                    }
+                    adapter.notifyDataSetChanged();
+                });
+
+
+    }
+
 }

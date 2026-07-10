@@ -1,5 +1,6 @@
 package com.nibm.brewlab.Admin.Category;
 
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.nibm.brewlab.R;
 
@@ -19,79 +24,197 @@ import java.util.ArrayList;
 public class CategoryActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+
     CategoryAdapter adapter;
+
     ArrayList<CategoryModel> list;
 
     Button btnAddCategory;
 
+    FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_category);
 
-        if (getSupportActionBar() != null) {
+        if(getSupportActionBar()!=null){
             getSupportActionBar().hide();
         }
 
         recyclerView = findViewById(R.id.recyclerView);
+
         btnAddCategory = findViewById(R.id.btnAddCategory);
+
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
 
         list = new ArrayList<>();
 
-        list.add(new CategoryModel("Coffee", R.drawable.ic_coffee));
-        list.add(new CategoryModel("Tea", R.drawable.ic_tea));
-        list.add(new CategoryModel("Cold Drinks", R.drawable.ic_cold_drink));
-        list.add(new CategoryModel("Cakes", R.drawable.ic_cake));
-        list.add(new CategoryModel("Snacks", R.drawable.ic_snack));
-        list.add(new CategoryModel("Desserts", R.drawable.ic_desert));
+        adapter = new CategoryAdapter(
+                this,
+                list
+        );
 
-        adapter = new CategoryAdapter(this, list);
-
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
 
-        btnAddCategory.setOnClickListener(v -> showAddDialog());
+        db = FirebaseFirestore.getInstance();
+
+        loadCategories();
+
+        btnAddCategory.setOnClickListener(v -> {
+
+            showAddDialog();
+
+        });
     }
 
-    private void showAddDialog() {
+    private void loadCategories(){
 
-        View dialogView = LayoutInflater.from(this)
-                .inflate(R.layout.dialog_add_category, null);
+        db.collection("Categories")
 
-        EditText edtName = dialogView.findViewById(R.id.edtCategoryName);
-        Button btnSave = dialogView.findViewById(R.id.btnSave);
-        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+                .addSnapshotListener((value,error)->{
+                    if(error != null || value == null){
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create();
+                        return;
+
+                    }
+
+                    list.clear();
+
+                    for(DocumentSnapshot doc:value.getDocuments()){
+
+                        CategoryModel model =
+                                doc.toObject(CategoryModel.class);
+
+                        if(model != null){
 
 
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
+                            model.setId(
+                                    doc.getId()
+                            );
+
+
+                            list.add(model);
+
+                        }
+                    }
+
+                    adapter.notifyDataSetChanged();
+
+                });
+    }
+
+    private void showAddDialog(){
+
+        View view =
+                LayoutInflater.from(this)
+                        .inflate(
+                                R.layout.dialog_add_category,
+                                null
+                        );
+
+        EditText edtName =
+                view.findViewById(
+                        R.id.edtCategoryName
+                );
+
+        Button btnSave =
+                view.findViewById(
+                        R.id.btnSave
+                );
+
+        Button btnCancel =
+                view.findViewById(
+                        R.id.btnCancel
+                );
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setView(view)
+                        .create();
+
+        btnCancel.setOnClickListener(v ->
+                dialog.dismiss()
+        );
 
 
         btnSave.setOnClickListener(v -> {
 
-            String name = edtName.getText().toString().trim();
+            String name =
+                    edtName.getText()
+                            .toString()
+                            .trim();
 
-            if (name.isEmpty()) {
-                edtName.setError("Enter category name");
+            if(name.isEmpty()){
+
+                edtName.setError(
+                        "Enter category name"
+                );
+
                 return;
+
             }
 
-            list.add(new CategoryModel(name, R.drawable.ic_coffee));
-            adapter.notifyItemInserted(list.size() - 1);
+            String id =
+                    db.collection("Categories")
+                            .document()
+                            .getId();
 
-            recyclerView.scrollToPosition(list.size() - 1);
+            CategoryModel category =
+                    new CategoryModel(
+                            id,
+                            name
+                    );
 
-            Toast.makeText(this,
-                    "Category Added",
-                    Toast.LENGTH_SHORT).show();
 
-            dialog.dismiss();
+            db.collection("Categories")
+                    .document(id)
+                    .set(category)
+
+                    .addOnSuccessListener(unused -> {
+
+
+                        Toast.makeText(
+                                this,
+                                "Category Added",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+
+
+                        dialog.dismiss();
+
+
+                    })
+
+
+                    .addOnFailureListener(e -> {
+
+
+                        Toast.makeText(
+                                this,
+                                e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+
+                    });
+
+
+
         });
 
+
+
         dialog.show();
+
+
     }
+
+
+
 }
