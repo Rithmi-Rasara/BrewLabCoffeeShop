@@ -38,20 +38,21 @@
                 android:textSize="18sp"
                 android:layout_marginBottom="15dp"/>
 
-            <TextView
-                android:id="@+id/txtOrderId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Order ID :"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="17sp"/>
 
             <TextView
                 android:id="@+id/txtCustomer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Customer :"
+                android:textColor="#DDDDDD"
+                android:textSize="16sp"
+                android:layout_marginTop="12dp"/>
+
+            <TextView
+                android:id="@+id/txtAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address :"
                 android:textColor="#DDDDDD"
                 android:textSize="16sp"
                 android:layout_marginTop="12dp"/>
@@ -66,15 +67,23 @@
                 android:textSize="16sp"
                 android:layout_marginTop="12dp"/>
 
+
             <TextView
-                android:id="@+id/txtStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Status :"
-                android:textColor="#7CFC00"
+                android:text="Assign Delivery Person"
+                android:textColor="#FFD7A6"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="20dp"/>
+
+            <Spinner
+                android:id="@+id/spDeliveryPerson"
+                android:layout_width="match_parent"
+                android:backgroundTint="#837268"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:drawable/editbox_background"/>
 
         </LinearLayout>
 

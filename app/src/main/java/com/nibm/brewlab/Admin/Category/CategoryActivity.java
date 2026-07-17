@@ -1,7 +1,8 @@
 package com.nibm.brewlab.Admin.Category;
 
-
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,109 +14,163 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CategoryActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-
     CategoryAdapter adapter;
 
-    ArrayList<CategoryModel> list;
+    ArrayList<CategoryModel> list = new ArrayList<>();
+    ArrayList<CategoryModel> filteredList = new ArrayList<>();
 
     Button btnAddCategory;
+    EditText edtSearch;
 
     FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_category);
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         recyclerView = findViewById(R.id.recyclerView);
-
         btnAddCategory = findViewById(R.id.btnAddCategory);
+        edtSearch = findViewById(R.id.edtSearch);
 
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(this)
         );
 
-        list = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
 
         adapter = new CategoryAdapter(
                 this,
-                list
+                filteredList
         );
 
         recyclerView.setAdapter(adapter);
 
-        db = FirebaseFirestore.getInstance();
-
         loadCategories();
 
-        btnAddCategory.setOnClickListener(v -> {
+        btnAddCategory.setOnClickListener(v ->
+                showAddDialog()
+        );
 
-            showAddDialog();
+        edtSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(
+                    CharSequence s,
+                    int start,
+                    int count,
+                    int after
+            ) {
+
+            }
+
+            @Override
+            public void onTextChanged(
+                    CharSequence s,
+                    int start,
+                    int before,
+                    int count
+            ) {
+
+                filterCategory(s.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(
+                    Editable s
+            ) {
+
+            }
 
         });
+
     }
 
-    private void loadCategories(){
+    private void loadCategories() {
 
         db.collection("Categories")
+                .addSnapshotListener((value, error) -> {
 
-                .addSnapshotListener((value,error)->{
-                    if(error != null || value == null){
-
+                    if (error != null || value == null) {
                         return;
-
                     }
 
                     list.clear();
 
-                    for(DocumentSnapshot doc:value.getDocuments()){
+                    for (DocumentSnapshot doc : value) {
 
                         CategoryModel model =
                                 doc.toObject(CategoryModel.class);
 
-                        if(model != null){
+                        if (model != null) {
 
-
-                            model.setId(
-                                    doc.getId()
-                            );
-
+                            model.setId(doc.getId());
 
                             list.add(model);
 
                         }
+
                     }
+
+                    filteredList.clear();
+                    filteredList.addAll(list);
 
                     adapter.notifyDataSetChanged();
 
                 });
+
     }
 
-    private void showAddDialog(){
+    private void filterCategory(String text) {
 
-        View view =
-                LayoutInflater.from(this)
-                        .inflate(
-                                R.layout.dialog_add_category,
-                                null
-                        );
+        filteredList.clear();
+
+        if (text.isEmpty()) {
+
+            filteredList.addAll(list);
+
+        } else {
+
+            for (CategoryModel model : list) {
+
+                if (model.getName()
+                        .toLowerCase()
+                        .contains(text.toLowerCase())) {
+
+                    filteredList.add(model);
+
+                }
+
+            }
+
+        }
+
+        adapter.notifyDataSetChanged();
+
+    }
+
+    private void showAddDialog() {
+
+        View view = LayoutInflater.from(this)
+                .inflate(
+                        R.layout.dialog_add_category,
+                        null
+                );
 
         EditText edtName =
                 view.findViewById(
@@ -141,7 +196,6 @@ public class CategoryActivity extends AppCompatActivity {
                 dialog.dismiss()
         );
 
-
         btnSave.setOnClickListener(v -> {
 
             String name =
@@ -149,7 +203,7 @@ public class CategoryActivity extends AppCompatActivity {
                             .toString()
                             .trim();
 
-            if(name.isEmpty()){
+            if (name.isEmpty()) {
 
                 edtName.setError(
                         "Enter category name"
@@ -159,24 +213,18 @@ public class CategoryActivity extends AppCompatActivity {
 
             }
 
-            String id =
-                    db.collection("Categories")
-                            .document()
-                            .getId();
+            HashMap<String, Object> map =
+                    new HashMap<>();
 
-            CategoryModel category =
-                    new CategoryModel(
-                            id,
-                            name
-                    );
-
+            map.put(
+                    "name",
+                    name
+            );
 
             db.collection("Categories")
-                    .document(id)
-                    .set(category)
+                    .add(map)
 
-                    .addOnSuccessListener(unused -> {
-
+                    .addOnSuccessListener(documentReference -> {
 
                         Toast.makeText(
                                 this,
@@ -184,16 +232,11 @@ public class CategoryActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show();
 
-
-
                         dialog.dismiss();
-
 
                     })
 
-
                     .addOnFailureListener(e -> {
-
 
                         Toast.makeText(
                                 this,
@@ -201,20 +244,12 @@ public class CategoryActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT
                         ).show();
 
-
                     });
-
-
 
         });
 
-
-
         dialog.show();
 
-
     }
-
-
 
 }

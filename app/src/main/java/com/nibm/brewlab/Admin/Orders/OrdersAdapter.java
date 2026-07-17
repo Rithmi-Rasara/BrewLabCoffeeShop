@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.graphics.Color;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,31 +40,51 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         Order order = orderList.get(position);
 
-        holder.txtOrderId.setText(order.getId());
+        holder.txtOrderId.setText("Order ID : " + order.getId());
+        holder.txtCustomer.setText("Customer : " + order.getCustomerName());
+        holder.txtAmount.setText("Rs. " + order.getTotalAmount());
 
-        holder.itemView.setOnClickListener(v -> {
+        String status = order.getOrderStatus();
 
-            Intent intent = new Intent(v.getContext(), OrderDetailActivity.class);
-            intent.putExtra("orderId", order.getId());
-            v.getContext().startActivity(intent);
-        });
+        holder.txtStatus.setText(status);
+
+        if ("Pending".equalsIgnoreCase(status)) {
+            holder.txtStatus.setTextColor(Color.RED);
+        } else if ("Preparing".equalsIgnoreCase(status)) {
+            holder.txtStatus.setTextColor(Color.parseColor("#FFA500"));
+        } else if ("Delivered".equalsIgnoreCase(status)) {
+            holder.txtStatus.setTextColor(Color.GREEN);
+        }
+
+        holder.txtStatus.setText(order.getOrderStatus());
 
         holder.btnView.setOnClickListener(v -> {
 
             Intent intent = new Intent(v.getContext(), OrderDetailActivity.class);
-            intent.putExtra("orderId", order.getId());
+            intent.putExtra("customer",
+                    order.getCustomerName());
+
+
+            intent.putExtra("total",
+                    order.getTotalAmount());
+
+
+            intent.putExtra("address",
+                    order.getDeliveryAddress());
+
+
+            intent.putExtra("status",
+                    order.getOrderStatus());
             v.getContext().startActivity(intent);
+
         });
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            int adapterPosition = holder.getAdapterPosition();
-
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                orderList.remove(adapterPosition);
-                notifyItemRemoved(adapterPosition);
-                notifyItemRangeChanged(adapterPosition, orderList.size());
-            }
+            FirebaseFirestore.getInstance()
+                    .collection("Orders")
+                    .document(order.getId())
+                    .delete();
         });
     }
 
@@ -72,15 +95,18 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtOrderId;
-        Button btnView, btnUpdate, btnDelete;
+        TextView txtOrderId, txtCustomer, txtAmount, txtStatus;
+        Button btnView, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             txtOrderId = itemView.findViewById(R.id.txtOrderId);
+            txtCustomer = itemView.findViewById(R.id.txtCustomer);
+            txtAmount = itemView.findViewById(R.id.txtAmount);
+            txtStatus = itemView.findViewById(R.id.txtStatus);
+
             btnView = itemView.findViewById(R.id.btnView);
-            btnUpdate = itemView.findViewById(R.id.btnUpdate);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

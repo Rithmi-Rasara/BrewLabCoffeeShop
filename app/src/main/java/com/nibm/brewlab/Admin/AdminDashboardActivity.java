@@ -11,23 +11,32 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.database.ValueEventListener;
+import com.nibm.brewlab.LoginActivity;
+
+import com.google.firebase.Timestamp;
+import java.util.Calendar;
+
+import com.nibm.brewlab.Admin.Feedback.Feedback;
+import com.nibm.brewlab.Admin.Feedback.FeedbackAdapter;
 
 import com.nibm.brewlab.Admin.Category.CategoryActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
 import com.nibm.brewlab.Admin.Delivery.ManageDeliveryActivity;
 import com.nibm.brewlab.Admin.Inventory.InventoryActivity;
+import com.nibm.brewlab.Admin.Loyalty.ManageLoyaltyActivity;
 import com.nibm.brewlab.Admin.Orders.Order;
 import com.nibm.brewlab.Admin.Orders.OrdersActivity;
 import com.nibm.brewlab.Admin.Orders.OrdersAdapter;
+import com.nibm.brewlab.Admin.Product.AddProductActivity;
 import com.nibm.brewlab.Admin.Product.ManageProductsActivity;
-import com.nibm.brewlab.Admin.Product.Product;
+import com.nibm.brewlab.Admin.Inventory.Inventory;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -36,23 +45,32 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private RecyclerView recyclerOrders, recyclerStock, recyclerFeedback;
 
+    private android.widget.ImageView imgLogout;
+    ArrayList<Feedback> feedbackList;
+    FeedbackAdapter feedbackAdapter;
     private LinearLayout addProduct;
     private LinearLayout manageOrders;
     private LinearLayout manageCategories;
     private LinearLayout viewCustomers;
     private LinearLayout manageDelivery;
     private LinearLayout manageInventory;
+    private LinearLayout cardManageLoyalty;
 
     private TextView txtAdminName;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference ordersRef, stockRef, userRef;
+    private DatabaseReference userRef;
 
     private ArrayList<Order> orderList;
-    private ArrayList<Product> lowStockList;
+    private ArrayList<Inventory> lowStockList;
 
     private OrdersAdapter ordersAdapter;
     private LowStockAdapter lowStockAdapter;
+    private TextView txtProductsCount;
+    private TextView txtOrdersCount;
+    private TextView txtLowStock;
+    private TextView txtTodayRevenue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +89,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadLowStock();
 
         setupClicks();
+
+        loadProductsCount();
+        loadOrdersCount();
+        loadLowStockCount();
+        loadTodayRevenue();
+
+        loadFeedback();
     }
 
     private void initViews() {
@@ -78,6 +103,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         txtAdminName = findViewById(R.id.txtAdminName);
+
+        imgLogout = findViewById(R.id.imgLogout);
 
         recyclerOrders = findViewById(R.id.recyclerOrders);
         recyclerStock = findViewById(R.id.recyclerStock);
@@ -88,8 +115,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
         manageCategories = findViewById(R.id.manageCategories);
         viewCustomers = findViewById(R.id.viewCustomers);
         manageDelivery = findViewById(R.id.manageDelivery);
-
         manageInventory = findViewById(R.id.manageInventory);
+        cardManageLoyalty = findViewById(R.id.manageLoyalty);
+        txtProductsCount = findViewById(R.id.txtProductsCount);
+        txtOrdersCount = findViewById(R.id.txtOrdersCount);
+        txtLowStock = findViewById(R.id.txtLowStock);
+        txtTodayRevenue = findViewById(R.id.txtTodayRevenue);
+        feedbackList = new ArrayList<>();
 
         recyclerOrders.setLayoutManager(new LinearLayoutManager(this));
         recyclerStock.setLayoutManager(new LinearLayoutManager(this));
@@ -99,6 +131,98 @@ public class AdminDashboardActivity extends AppCompatActivity {
         lowStockList = new ArrayList<>();
     }
 
+    private void loadProductsCount() {
+
+        FirebaseFirestore.getInstance()
+                .collection("Products")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots ->
+
+                        txtProductsCount.setText(
+                                String.valueOf(queryDocumentSnapshots.size())
+                        )
+                );
+
+    }
+
+    private void loadOrdersCount() {
+
+        FirebaseFirestore.getInstance()
+                .collection("Orders")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots ->
+
+                        txtOrdersCount.setText(
+                                String.valueOf(queryDocumentSnapshots.size())
+                        )
+                );
+
+    }
+
+    private void loadLowStockCount() {
+
+        FirebaseFirestore.getInstance()
+                .collection("Inventory")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    int low = 0;
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+
+                        Long qty = doc.getLong("quantity");
+
+                        if (qty != null && qty <= 10) {
+                            low++;
+                        }
+
+                    }
+
+                    txtLowStock.setText(String.valueOf(low));
+
+                });
+
+    }
+
+    private void loadTodayRevenue() {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Timestamp start = new Timestamp(calendar.getTime());
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        Timestamp end = new Timestamp(calendar.getTime());
+
+        FirebaseFirestore.getInstance()
+                .collection("Orders")
+                .whereGreaterThanOrEqualTo("orderDate", start)
+                .whereLessThan("orderDate", end)
+                .whereEqualTo("orderStatus", "Completed")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    double total = 0;
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+
+                        Double amount = doc.getDouble("totalAmount");
+
+                        if (amount != null) {
+                            total += amount;
+                        }
+                    }
+
+                    txtTodayRevenue.setText("Rs. " + total);
+
+                });
+
+    }
     private void setupAdapters() {
 
         ordersAdapter = new OrdersAdapter(orderList);
@@ -106,43 +230,47 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         recyclerOrders.setAdapter(ordersAdapter);
         recyclerStock.setAdapter(lowStockAdapter);
+
+        feedbackAdapter = new FeedbackAdapter(feedbackList);
+        recyclerFeedback.setAdapter(feedbackAdapter);
     }
 
     private void loadRecentOrders() {
 
-        ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        ordersRef.limitToLast(10)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        db.collection("Orders")
+                .limit(10)
+                .addSnapshotListener((value, error) -> {
 
-                        orderList.clear();
+                    if(error != null || value == null){
+                        return;
+                    }
 
-                        for (DataSnapshot ds : snapshot.getChildren()) {
+                    orderList.clear();
 
-                            Order order = ds.getValue(Order.class);
+                    for(DocumentSnapshot doc : value.getDocuments()){
 
-                            if (order != null) {
-                                orderList.add(order);
-                            }
+                        Order order = doc.toObject(Order.class);
+
+                        if(order != null){
+
+                            order.setId(doc.getId());
+
+                            orderList.add(order);
                         }
-
-                        ordersAdapter.notifyDataSetChanged();
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                    }
+                    ordersAdapter.notifyDataSetChanged();
                 });
     }
 
-    private void loadLowStock() {
+    private void loadLowStock(){
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("Inventory")
-                .addSnapshotListener((value, error) -> {
+                .addSnapshotListener((value,error)->{
 
                     if(error != null || value == null){
                         return;
@@ -150,50 +278,53 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
                     lowStockList.clear();
 
-                    for(DocumentSnapshot doc : value.getDocuments()){
+
+                    for(DocumentSnapshot doc:value){
 
                         String name = doc.getString("name");
-                        Object qtyObject = doc.get("quantity");
-                        int quantity = 0;
 
-                        if(qtyObject instanceof Long){
+                        Long qty = doc.getLong("quantity");
 
-                            quantity = ((Long) qtyObject).intValue();
+                        if(qty != null && qty <= 10){
 
-                        }
+                            Inventory item = new Inventory();
 
-                        else if(qtyObject instanceof Double){
+                            item.setId(doc.getId());
+                            item.setName(name);
+                            item.setQuantity(qty.intValue());
 
-                            quantity = ((Double) qtyObject).intValue();
-
-                        }
-
-                        else if(qtyObject instanceof String){
-
-                            try {
-                                quantity = Integer.parseInt(
-                                        qtyObject.toString()
-                                );
-                            }catch(Exception e){
-
-                                quantity = 0;
-
-                            }
-                        }
-
-                        if(quantity <= 10){
-
-                            Product product = new Product();
-                            product.setName(name);
-                            product.setStock(
-                                    String.valueOf(quantity)
-                            );
-
-                            lowStockList.add(product);
+                            lowStockList.add(item);
                         }
                     }
+
                     lowStockAdapter.notifyDataSetChanged();
 
+                });
+    }
+
+    private void loadFeedback() {
+
+        FirebaseFirestore.getInstance()
+                .collection("Feedback")
+                .limit(10)
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null || value == null)
+                        return;
+
+                    feedbackList.clear();
+
+                    for (DocumentSnapshot doc : value.getDocuments()) {
+
+                        Feedback feedback = doc.toObject(Feedback.class);
+
+                        if (feedback != null) {
+                            feedback.setId(doc.getId());
+                            feedbackList.add(feedback);
+                        }
+                    }
+
+                    feedbackAdapter.notifyDataSetChanged();
                 });
     }
 
@@ -270,6 +401,40 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(
                         AdminDashboardActivity.this,
                         InventoryActivity.class)));
+
+        cardManageLoyalty.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this,
+                    ManageLoyaltyActivity.class);
+            startActivity(intent);
+        });
+
+        imgLogout.setOnClickListener(v -> {
+
+            new androidx.appcompat.app.AlertDialog.Builder(AdminDashboardActivity.this)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setCancelable(false)
+
+                    .setPositiveButton("Logout", (dialog, which) -> {
+
+                        FirebaseAuth.getInstance().signOut();
+
+                        Intent intent = new Intent(AdminDashboardActivity.this,
+                                LoginActivity.class);
+
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                        startActivity(intent);
+                        finish();
+
+                    })
+
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+
+                    .show();
+
+        });
     }
 }
 

@@ -14,52 +14,106 @@ import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
 
-public class CategoryProductAdapter extends RecyclerView.Adapter<CategoryProductAdapter.ViewHolder> {
+public class CategoryProductAdapter
+        extends RecyclerView.Adapter<CategoryProductAdapter.ViewHolder> {
 
-    Context context;
-    ArrayList<Product> list;
+    private Context context;
+    private ArrayList<Product> list;
 
-    public CategoryProductAdapter(Context context, ArrayList<Product> list) {
+
+    public CategoryProductAdapter(Context context,
+                                  ArrayList<Product> list) {
+
         this.context = context;
         this.list = list;
+
     }
+
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType) {
+
 
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_category_product, parent, false);
+                .inflate(
+                        R.layout.item_category_product,
+                        parent,
+                        false
+                );
+
 
         return new ViewHolder(view);
+
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull ViewHolder holder,
+            int position) {
+
 
         Product product = list.get(position);
 
-        holder.tvName.setText(product.getName());
-        holder.tvPrice.setText("Rs. " + product.getPrice());
-        holder.tvStock.setText("Stock : " + product.getStock());
+
+        holder.name.setText(
+                product.getName()
+        );
+
+
+        holder.price.setText(
+                "Rs. " + product.getPrice()
+        );
+
+
+        // Stock is managed from Inventory collection
+        holder.stock.setText(
+                "Stock : Managed in Inventory"
+        );
+
 
     }
+
 
     @Override
     public int getItemCount() {
+
         return list.size();
+
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName,tvPrice,tvStock;
+    public static class ViewHolder
+            extends RecyclerView.ViewHolder {
+
+
+        TextView name;
+        TextView price;
+        TextView stock;
+
 
         public ViewHolder(@NonNull View itemView) {
+
             super(itemView);
 
-            tvName = itemView.findViewById(R.id.tvProductName);
-            tvPrice = itemView.findViewById(R.id.tvProductPrice);
-            tvStock = itemView.findViewById(R.id.tvProductStock);
+
+            name = itemView.findViewById(
+                    R.id.tvProductName
+            );
+
+
+            price = itemView.findViewById(
+                    R.id.tvProductPrice
+            );
+
+
+            stock = itemView.findViewById(
+                    R.id.tvProductStock
+            );
+
         }
     }
 }

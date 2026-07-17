@@ -13,7 +13,13 @@
         android:theme="@style/Theme.BrewLab"
         tools:targetApi="31">
         <activity
-            android:name=".Admin.Category.CategoryProductsActivity"
+            android:name=".Admin.Feedback.FeedbackActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Admin.Loyalty.ManageLoyaltyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Admin.Category.CategoryProduct"
             android:exported="false" />
         <activity
             android:name=".Admin.Category.AddCategoryActivity"

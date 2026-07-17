@@ -14,6 +14,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import com.nibm.brewlab.Admin.Inventory.AddInventoryActivity;
+
+import androidx.appcompat.app.AlertDialog;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,13 +29,13 @@ public class InventoryAdapter
         extends RecyclerView.Adapter<InventoryAdapter.ViewHolder>
         implements Filterable {
 
-    private List<InventoryItem> list;
-    private ArrayList<InventoryItem> fullList;
+    private List<Inventory> list;
+    private ArrayList<Inventory> fullList;
 
 
     FirebaseFirestore db;
 
-    public InventoryAdapter(List<InventoryItem> list) {
+    public InventoryAdapter(List<Inventory> list) {
 
         this.list = list;
 
@@ -55,73 +60,86 @@ public class InventoryAdapter
     }
 
     @Override
-    public void onBindViewHolder(
-            @NonNull ViewHolder holder,
-            int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        InventoryItem item = list.get(position);
+        Inventory item = list.get(position);
 
         holder.tvName.setText(item.getName());
+        holder.tvQty.setText("Quantity : " + item.getQuantity());
 
-        holder.tvQty.setText(
-                "Quantity : " + item.getQuantity()
-        );
-
-        if(item.getQuantity() <= 10){
+        if (item.getQuantity() <= 5) {
 
             holder.tvStockStatus.setText("⚠ Low Stock");
+            holder.tvStockStatus.setTextColor(Color.RED);
 
-            holder.tvStockStatus.setTextColor(
-                    Color.RED
-            );
+        } else if (item.getQuantity() <= 10) {
 
-            holder.itemView.setBackgroundColor(
-                    Color.parseColor("#3A1717")
-            );
+            holder.tvStockStatus.setText("⚠ Medium Stock");
+            holder.tvStockStatus.setTextColor(Color.parseColor("#FFA500"));
 
-        }
-        else{
+        } else {
 
             holder.tvStockStatus.setText("✓ Available");
-
-            holder.tvStockStatus.setTextColor(
-                    Color.GREEN
-            );
-
-            holder.itemView.setBackgroundColor(
-                    Color.parseColor("#120B08")
-            );
-
+            holder.tvStockStatus.setTextColor(Color.parseColor("#4CAF50"));
         }
+
+        holder.btnUpdate.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    holder.itemView.getContext(),
+                    AddInventoryActivity.class);
+
+            intent.putExtra("id", item.getId());
+            intent.putExtra("name", item.getName());
+            intent.putExtra("quantity", String.valueOf(item.getQuantity()));
+
+            holder.itemView.getContext().startActivity(intent);
+
+        });
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            db.collection("Inventory")
-                    .document(item.getId())
-                    .delete()
+            new AlertDialog.Builder(holder.itemView.getContext())
+                    .setTitle("Delete Inventory")
+                    .setMessage("Delete " + item.getName() + " ?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
 
-                    .addOnSuccessListener(unused -> {
+                        db.collection("Inventory")
+                                .document(item.getId())
+                                .delete()
+                                .addOnSuccessListener(unused -> {
 
-                        list.remove(position);
+                                    int currentPosition = holder.getAdapterPosition();
 
-                        notifyItemRemoved(position);
+                                    if (currentPosition != RecyclerView.NO_POSITION) {
 
-                        Toast.makeText(
-                                holder.itemView.getContext(),
-                                "Deleted Successfully",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                                        list.remove(currentPosition);
+
+                                        notifyItemRemoved(currentPosition);
+
+                                    }
+
+                                    Toast.makeText(
+                                            holder.itemView.getContext(),
+                                            "Deleted Successfully",
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+
+                                })
+                                .addOnFailureListener(e ->
+
+                                        Toast.makeText(
+                                                holder.itemView.getContext(),
+                                                e.getMessage(),
+                                                Toast.LENGTH_SHORT
+                                        ).show());
+
                     })
+                    .setNegativeButton("Cancel", null)
+                    .show();
 
-                    .addOnFailureListener(e -> {
-
-                        Toast.makeText(
-                                holder.itemView.getContext(),
-                                e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    });
         });
+
     }
 
     @Override
@@ -135,52 +153,45 @@ public class InventoryAdapter
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            ArrayList<InventoryItem> filteredList =
-                    new ArrayList<>();
+            ArrayList<Inventory> filteredList = new ArrayList<>();
 
-            if(constraint == null || constraint.length() == 0){
+            if (constraint == null || constraint.length() == 0) {
 
                 filteredList.addAll(fullList);
 
-            }
-            else{
+            } else {
 
-                String text =
-                        constraint.toString()
-                                .toLowerCase()
-                                .trim();
+                String text = constraint.toString()
+                        .toLowerCase()
+                        .trim();
 
-                for(InventoryItem item : fullList){
+                for (Inventory item : fullList) {
 
-                    if(item.getName()
-                            .toLowerCase()
-                            .contains(text)){
+                    if (item.getName().toLowerCase().contains(text)
+                            || String.valueOf(item.getQuantity()).contains(text)) {
 
                         filteredList.add(item);
-
                     }
                 }
             }
-            FilterResults results = new FilterResults();
 
+            FilterResults results = new FilterResults();
             results.values = filteredList;
 
             return results;
-
         }
+        @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(
-                CharSequence constraint,
-                FilterResults results) {
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
 
             list.clear();
 
-            list.addAll(
-                    (ArrayList<InventoryItem>) results.values
-            );
+            if (results.values != null) {
+                list.addAll((ArrayList<Inventory>) results.values);
+            }
 
             notifyDataSetChanged();
-
         }
     };
     public void updateFullList(){
@@ -203,7 +214,7 @@ public class InventoryAdapter
         TextView tvQty;
         TextView tvStockStatus;
 
-        Button btnDelete;
+        Button btnUpdate, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
 
@@ -221,9 +232,14 @@ public class InventoryAdapter
                     R.id.tvStockStatus
             );
 
-            btnDelete = itemView.findViewById(
-                    R.id.btnDelete
-            );
+            btnUpdate =
+                    itemView.findViewById(
+                            R.id.btnUpdate
+                    );
+            btnDelete =
+                    itemView.findViewById(
+                            R.id.btnDelete
+                    );
         }
     }
 }

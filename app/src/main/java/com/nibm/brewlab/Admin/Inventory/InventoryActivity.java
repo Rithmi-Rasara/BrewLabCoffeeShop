@@ -21,7 +21,7 @@ public class InventoryActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     InventoryAdapter adapter;
-    ArrayList<InventoryItem> list;
+    ArrayList<Inventory> list;
     FirebaseFirestore db;
     EditText searchInventory;
 
@@ -134,8 +134,8 @@ public class InventoryActivity extends AppCompatActivity {
                             }
                         }
 
-                        InventoryItem item =
-                                new InventoryItem(
+                        Inventory item =
+                                new Inventory(
                                         doc.getId(),
                                         name,
                                         quantity

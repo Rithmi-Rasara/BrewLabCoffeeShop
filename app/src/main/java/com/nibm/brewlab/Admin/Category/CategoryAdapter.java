@@ -50,7 +50,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         holder.btnView.setOnClickListener(v -> {
 
-            Intent intent = new Intent(context, CategoryProductsActivity.class);
+            Intent intent = new Intent(context, CategoryProduct.class);
             intent.putExtra("category", model.getName());
             context.startActivity(intent);
         });

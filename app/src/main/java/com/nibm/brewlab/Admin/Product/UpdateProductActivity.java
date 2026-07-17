@@ -1,126 +1,169 @@
 package com.nibm.brewlab.Admin.Product;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class UpdateProductActivity extends AppCompatActivity {
 
-
-    EditText edtName, edtPrice, edtCategory;
-
-    Button btnSave, btnCancel;
+    TextView txtTitle;
+    EditText edtName, edtPrice, edtCategory, edtDesc;
+    Button btnUpdate, btnChooseImage;
+    ImageView imgProduct;
 
     FirebaseFirestore db;
 
+    Uri imageUri;
     String productId;
-    String imageUri;
-    String desc;
-
+    String oldImage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_product);
+        setContentView(R.layout.activity_add_product);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        db = FirebaseFirestore.getInstance();
+
+        txtTitle = findViewById(R.id.txtTitle);
 
         edtName = findViewById(R.id.edtName);
         edtPrice = findViewById(R.id.edtPrice);
         edtCategory = findViewById(R.id.edtCategory);
+        edtDesc = findViewById(R.id.edtDesc);
 
-        btnSave = findViewById(R.id.btnSave);
-        btnCancel = findViewById(R.id.btnCancel);
+        btnUpdate = findViewById(R.id.btnAdd);
+        btnChooseImage = findViewById(R.id.btnChooseImage);
 
-        db = FirebaseFirestore.getInstance();
+        imgProduct = findViewById(R.id.imgProduct);
 
-        productId = getIntent().getStringExtra("id");
-
-        String name = getIntent().getStringExtra("name");
-        String price = getIntent().getStringExtra("price");
-        String category = getIntent().getStringExtra("category");
-
-        desc = getIntent().getStringExtra("desc");
-        imageUri = getIntent().getStringExtra("imageUri");
-
-        edtName.setText(name);
-        edtPrice.setText(price);
-        edtCategory.setText(category);
-
-        btnSave.setOnClickListener(v -> {
-
-            String updateName = edtName.getText().toString().trim();
-            String updatePrice = edtPrice.getText().toString().trim();
-            String updateCategory = edtCategory.getText().toString().trim();
-
-            if(updateName.isEmpty() ||
-                    updatePrice.isEmpty() ||
-                    updateCategory.isEmpty()){
-
-                Toast.makeText(this,
-                        "Please fill all fields",
-                        Toast.LENGTH_SHORT).show();
-
-                return;
-            }
-
-            Map<String,Object> product = new HashMap<>();
-
-            product.put("name", updateName);
-            product.put("price", updatePrice);
-            product.put("category", updateCategory);
-
-            product.put("desc", desc);
-            product.put("imageUri", imageUri);
-
-            db.collection("Products")
-                    .document(productId)
-                    .update(product)
-
-                    .addOnSuccessListener(unused -> {
+        txtTitle.setText("Update Product");
+        btnUpdate.setText("Update Product");
 
 
-                        Toast.makeText(this,
-                                "Product Updated Successfully",
-                                Toast.LENGTH_SHORT).show();
+        Intent intent = getIntent();
+
+        productId = intent.getStringExtra("id");
+
+        edtName.setText(intent.getStringExtra("name"));
+        edtPrice.setText(intent.getStringExtra("price"));
+        edtCategory.setText(intent.getStringExtra("category"));
+        edtDesc.setText(intent.getStringExtra("desc"));
+
+        oldImage = intent.getStringExtra("imageUri");
+
+        if(oldImage != null && !oldImage.isEmpty()){
+
+            imageUri = Uri.parse(oldImage);
+            imgProduct.setImageURI(imageUri);
+
+        }
 
 
-                        finish();
+        btnChooseImage.setOnClickListener(v -> {
 
-
-                    })
-
-                    .addOnFailureListener(e -> {
-
-
-                        Toast.makeText(this,
-                                "Error : " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-
-
-                    });
-
+            Intent i = new Intent(Intent.ACTION_PICK);
+            i.setType("image/*");
+            imagePicker.launch(i);
 
         });
 
-        btnCancel.setOnClickListener(v -> {
 
-            finish();
-
-        });
-
+        btnUpdate.setOnClickListener(v -> updateProduct());
 
     }
+
+
+    private void updateProduct(){
+
+        String name = edtName.getText().toString().trim();
+        String price = edtPrice.getText().toString().trim();
+        String category = edtCategory.getText().toString().trim();
+        String desc = edtDesc.getText().toString().trim();
+
+
+        if(name.isEmpty()){
+
+            edtName.setError("Enter product name");
+            return;
+
+        }
+
+
+        if(price.isEmpty()){
+
+            edtPrice.setError("Enter price");
+            return;
+
+        }
+
+
+        String image = imageUri != null
+                ? imageUri.toString()
+                : oldImage;
+
+
+        Product product = new Product(
+                name,
+                price,
+                category,
+                desc,
+                image
+        );
+
+
+        db.collection("Products")
+                .document(productId)
+                .set(product)
+                .addOnSuccessListener(unused -> {
+
+                    Toast.makeText(
+                            this,
+                            "Updated Successfully",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    finish();
+
+                })
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            e.getMessage(),
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                });
+
+    }
+
+
+    private final ActivityResultLauncher<Intent> imagePicker =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+
+                        if(result.getResultCode() == Activity.RESULT_OK &&
+                                result.getData() != null){
+
+                            imageUri = result.getData().getData();
+
+                            imgProduct.setImageURI(imageUri);
+
+                        }
+
+                    });
 }

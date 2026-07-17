@@ -28,31 +28,24 @@ public class ManageProductsActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_products);
 
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
-
-        // Connect Views
         recyclerView = findViewById(R.id.recyclerView);
         searchBox = findViewById(R.id.searchBox);
         addBtn = findViewById(R.id.addBtn);
-
 
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(this)
         );
 
-
         productList = new ArrayList<>();
-
 
         adapter = new ProductAdapter(
                 this,
@@ -61,16 +54,10 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
 
-
         db = FirebaseFirestore.getInstance();
 
-
-        // Load products from Firestore
         loadProducts();
 
-
-
-        // Open Add Product page
         addBtn.setOnClickListener(v -> {
 
             Intent intent = new Intent(
@@ -82,9 +69,6 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         });
 
-
-
-        // Search
         searchBox.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -96,7 +80,6 @@ public class ManageProductsActivity extends AppCompatActivity {
             ) {
 
             }
-
 
             @Override
             public void onTextChanged(
@@ -111,7 +94,6 @@ public class ManageProductsActivity extends AppCompatActivity {
 
             }
 
-
             @Override
             public void afterTextChanged(Editable s) {
 
@@ -121,48 +103,36 @@ public class ManageProductsActivity extends AppCompatActivity {
 
     }
 
-
-
     private void loadProducts() {
-
 
         db.collection("Products")
                 .addSnapshotListener((value, error) -> {
-
 
                     if(error != null || value == null){
                         return;
                     }
 
-
                     productList.clear();
 
-
-
                     for(DocumentSnapshot doc : value.getDocuments()){
-
 
                         Product product =
                                 doc.toObject(Product.class);
 
-
-
                         if(product != null){
-
 
                             product.setId(
                                     doc.getId()
                             );
-
 
                             productList.add(product);
 
                         }
 
                     }
+                    adapter.updateFullList();
                     adapter.notifyDataSetChanged();
                 });
-
 
     }
 

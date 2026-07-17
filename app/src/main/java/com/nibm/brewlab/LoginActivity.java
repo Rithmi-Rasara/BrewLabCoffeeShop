@@ -13,12 +13,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nibm.brewlab.Admin.AdminDashboardActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
 import com.nibm.brewlab.Admin.Delivery.DeliveryDetailsActivity;
 import com.nibm.brewlab.Customer.CustomerDashboardActivity;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -28,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar loginLoader;
 
     private FirebaseAuth auth;
-    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         loginLoader = findViewById(R.id.loginLoader);
 
         auth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -80,7 +80,11 @@ public class LoginActivity extends AppCompatActivity {
 
                     String uid = auth.getCurrentUser().getUid();
 
-                    databaseReference.child(uid).get()
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                    db.collection("Users")
+                            .document(uid)
+                            .get()
                             .addOnSuccessListener(snapshot -> {
 
                                 loginLoader.setVisibility(View.GONE);
@@ -89,11 +93,42 @@ public class LoginActivity extends AppCompatActivity {
 
                                 if (snapshot.exists()) {
 
-                                    String role = snapshot.child("role").getValue(String.class);
+
+                                    String role = snapshot.getString("role");
+
+                                    String status = snapshot.getString("status");
+
+
+
+                                    // Customer / Delivery approval check
+
+                                    if(role != null &&
+                                            (role.equalsIgnoreCase("Customer") ||
+                                                    role.equalsIgnoreCase("Delivery Person"))){
+
+
+                                        if(status == null ||
+                                                !status.equalsIgnoreCase("Approved")){
+
+
+                                            FirebaseAuth.getInstance().signOut();
+
+
+                                            Toast.makeText(LoginActivity.this,
+                                                    "Account not approved yet",
+                                                    Toast.LENGTH_LONG).show();
+
+                                            return;
+
+                                        }
+
+                                    }
 
                                     Toast.makeText(LoginActivity.this,
                                             "Login Successful",
                                             Toast.LENGTH_SHORT).show();
+
+
 
                                     Intent intent = null;
 
@@ -111,13 +146,15 @@ public class LoginActivity extends AppCompatActivity {
                                                     AdminDashboardActivity.class);
                                             break;
 
+
                                         case "customer":
                                             intent = new Intent(LoginActivity.this,
                                                     CustomerDashboardActivity.class);
                                             break;
 
-                                        case "delivery":
+
                                         case "delivery person":
+                                        case "delivery":
                                             intent = new Intent(LoginActivity.this,
                                                     DeliveryDetailsActivity.class);
                                             break;
