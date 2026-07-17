@@ -1,6 +1,7 @@
 package com.nibm.brewlab.Admin.Product;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,81 +53,32 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.price.setText("Rs. " + product.getPrice());
         holder.category.setText(product.getCategory());
 
-        // Load Product Image
-        if (product.getImageUri() != null && !product.getImageUri().isEmpty()) {
+        int imageResId = context.getResources().getIdentifier(
+                product.getImageUri(),
+                "drawable",
+                context.getPackageName()
+        );
 
-            int imageResId = context.getResources().getIdentifier(
-                    product.getImageUri(),
-                    "drawable",
-                    context.getPackageName()
-            );
+        Log.d("PRODUCT_IMAGE",
+                "Name = " + product.getImageUri() + " | ID = " + imageResId);
 
-            if (imageResId != 0) {
-                holder.productImage.setImageResource(imageResId);
-            } else {
-                holder.productImage.setImageResource(R.drawable.cappuccino);
-            }
-
+        if (imageResId != 0) {
+            holder.productImage.setImageResource(imageResId);
         } else {
             holder.productImage.setImageResource(R.drawable.cappuccino);
         }
 
-        // Update Button
-        holder.btnUpdate.setOnClickListener(v -> {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-            View dialogView = LayoutInflater.from(context)
-                    .inflate(R.layout.dialog_update_product, null);
-
-            builder.setView(dialogView);
-
-            EditText edtName = dialogView.findViewById(R.id.edtName);
-            EditText edtPrice = dialogView.findViewById(R.id.edtPrice);
-            EditText edtCategory = dialogView.findViewById(R.id.edtCategory);
-
-            Button btnSave = dialogView.findViewById(R.id.btnSave);
-            Button btnCancel = dialogView.findViewById(R.id.btnCancel);
-
-            edtName.setText(product.getName());
-            edtPrice.setText(product.getPrice());
-            edtCategory.setText(product.getCategory());
-
-            AlertDialog dialog = builder.create();
-
-            btnCancel.setOnClickListener(view -> dialog.dismiss());
-
-            btnSave.setOnClickListener(view -> {
-
-                product.setName(edtName.getText().toString().trim());
-                product.setPrice(edtPrice.getText().toString().trim());
-                product.setCategory(edtCategory.getText().toString().trim());
-
-                notifyItemChanged(holder.getAdapterPosition());
-
-                Toast.makeText(context,
-                        "Product Updated Successfully",
-                        Toast.LENGTH_SHORT).show();
-
-                dialog.dismiss();
-            });
-
-            dialog.show();
-        });
-
-        // Delete Button
         holder.btnDelete.setOnClickListener(v -> {
 
-            int adapterPosition = holder.getAdapterPosition();
+            int pos = holder.getAdapterPosition();
 
-            if (adapterPosition != RecyclerView.NO_POSITION) {
+            if (pos != RecyclerView.NO_POSITION) {
+                Product removed = productList.get(pos);
 
-                Product deletedProduct = productList.get(adapterPosition);
+                productList.remove(pos);
+                productListFull.remove(removed);
 
-                productList.remove(adapterPosition);
-                productListFull.remove(deletedProduct);
-
-                notifyItemRemoved(adapterPosition);
+                notifyItemRemoved(pos);
 
                 Toast.makeText(context,
                         "Product Deleted",
@@ -142,18 +94,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView productImage;
         TextView name, price, category;
+        ImageView productImage;
         Button btnUpdate, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            productImage = itemView.findViewById(R.id.productImage);
-
             name = itemView.findViewById(R.id.productName);
             price = itemView.findViewById(R.id.productPrice);
             category = itemView.findViewById(R.id.productCategory);
+
+            productImage = itemView.findViewById(R.id.productImage);
 
             btnUpdate = itemView.findViewById(R.id.btnUpdate);
             btnDelete = itemView.findViewById(R.id.btnDelete);
@@ -161,7 +113,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public void updateList(ArrayList<Product> newList) {
-
         productList.clear();
         productList.addAll(newList);
 
@@ -184,19 +135,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             ArrayList<Product> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-
                 filteredList.addAll(productListFull);
-
             } else {
 
-                String filterPattern =
-                        constraint.toString().toLowerCase().trim();
+                String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (Product item : productListFull) {
-
                     if (item.getName() != null &&
                             item.getName().toLowerCase().contains(filterPattern)) {
-
                         filteredList.add(item);
                     }
                 }
@@ -209,12 +155,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+        protected void publishResults(CharSequence constraint, FilterResults results) {
 
             productList.clear();
             productList.addAll((ArrayList<Product>) results.values);
-
             notifyDataSetChanged();
         }
     };

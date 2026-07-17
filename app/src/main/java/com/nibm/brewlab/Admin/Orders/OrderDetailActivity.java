@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import com.nibm.brewlab.R;
 
 public class OrderDetailActivity extends AppCompatActivity {
@@ -41,6 +42,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         txtCustomer.setText("Customer: " + customer);
         txtTotal.setText("Total: Rs " + total);
         txtStatus.setText("Status: " + status);
+
 
     }
 }

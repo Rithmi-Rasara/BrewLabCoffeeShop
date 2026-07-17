@@ -10,11 +10,9 @@ public class Product {
     private String imageUri;
 
     public Product() {
-        // Required for Firebase
     }
 
-    public Product(String name, String price, String category,
-                   String desc, String imageUri) {
+    public Product(String name, String price, String category, String desc, String imageUri) {
         this.name = name;
         this.price = price;
         this.category = category;
@@ -22,8 +20,7 @@ public class Product {
         this.imageUri = imageUri;
     }
 
-    public Product(String id, String name, String price,
-                   String category, String desc, String imageUri) {
+    public Product(String id, String name, String price, String category, String desc, String imageUri) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -78,5 +75,17 @@ public class Product {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", price='" + price + '\'' +
+                ", category='" + category + '\'' +
+                ", desc='" + desc + '\'' +
+                ", imageUri='" + imageUri + '\'' +
+                '}';
     }
 }

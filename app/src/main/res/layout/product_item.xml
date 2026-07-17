@@ -14,6 +14,7 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
+        <!-- Product Image -->
         <ImageView
             android:id="@+id/productImage"
             android:layout_width="90dp"

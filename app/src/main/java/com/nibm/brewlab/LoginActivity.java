@@ -1,5 +1,4 @@
 package com.nibm.brewlab;
-import com.nibm.brewlab.Delivery.DeliveryDashboardActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nibm.brewlab.Admin.AdminDashboardActivity;
 import com.nibm.brewlab.Admin.Customers.CustomersActivity;
+import com.nibm.brewlab.Customer.CustomerDashboardActivity;
+import com.nibm.brewlab.Admin.Delivery.DeliveryDetailsActivity;
+import com.nibm.brewlab.Delivery.DeliveryDashboardActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -112,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         case "customer":
                                             intent = new Intent(LoginActivity.this,
-                                                    CustomersActivity.class);
+                                                    CustomerDashboardActivity.class);
                                             break;
 
                                         case "delivery":
