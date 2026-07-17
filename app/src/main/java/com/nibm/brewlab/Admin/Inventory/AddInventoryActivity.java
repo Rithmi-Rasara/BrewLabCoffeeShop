@@ -18,6 +18,8 @@ public class AddInventoryActivity extends AppCompatActivity {
 
     private EditText etName, etQty;
     private Button btnAdd;
+    private boolean isUpdate = false;
+    private String documentId = "";
 
     private FirebaseFirestore db;
 
@@ -41,86 +43,106 @@ public class AddInventoryActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        if (getIntent().hasExtra("id")) {
+
+            isUpdate = true;
+            documentId = getIntent().getStringExtra("id");
+
+            etName.setText(getIntent().getStringExtra("name"));
+            etQty.setText(getIntent().getStringExtra("quantity"));
+
+            btnAdd.setText("Update Item");
+        }
+
         btnAdd.setOnClickListener(v -> addItem());
 
     }
-    private void addItem(){
+    private void addItem() {
 
-        String name = etName.getText()
-                .toString()
-                .trim();
+        String name = etName.getText().toString().trim();
+        String qtyText = etQty.getText().toString().trim();
 
-        String qtyText = etQty.getText()
-                .toString()
-                .trim();
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(qtyText)) {
 
-        if(TextUtils.isEmpty(name) ||
-                TextUtils.isEmpty(qtyText)){
-
-            Toast.makeText(
-                    this,
+            Toast.makeText(this,
                     "Fill all fields",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+                    Toast.LENGTH_SHORT).show();
             return;
-
         }
+
         int quantity;
 
         try {
 
             quantity = Integer.parseInt(qtyText);
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
-            Toast.makeText(
-                    this,
+            Toast.makeText(this,
                     "Invalid Quantity",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Map<String,Object> item = new HashMap<>();
-
+        Map<String, Object> item = new HashMap<>();
         item.put("name", name);
-
         item.put("quantity", quantity);
 
-        db.collection("Inventory")
+        if (isUpdate) {
 
-                .add(item)
-
-                .addOnSuccessListener(documentReference -> {
-
-                    Toast.makeText(
-                            this,
-                            "Inventory Item Added",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    if(quantity <= 10){
+            db.collection("Inventory")
+                    .document(documentId)
+                    .update(item)
+                    .addOnSuccessListener(unused -> {
 
                         Toast.makeText(
                                 this,
-                                "⚠️ Low Stock Alert!",
-                                Toast.LENGTH_LONG
+                                "Inventory Updated",
+                                Toast.LENGTH_SHORT
                         ).show();
-                    }
 
-                    etName.setText("");
+                        finish();
 
-                    etQty.setText("");
-                })
-                .addOnFailureListener(e -> {
+                    })
+                    .addOnFailureListener(e ->
 
-                    Toast.makeText(
-                            this,
-                            "Error : " + e.getMessage(),
-                            Toast.LENGTH_SHORT
-                    ).show();
-                });
+                            Toast.makeText(
+                                    this,
+                                    e.getMessage(),
+                                    Toast.LENGTH_SHORT
+                            ).show());
+
+        } else {
+
+            db.collection("Inventory")
+                    .add(item)
+                    .addOnSuccessListener(documentReference -> {
+
+                        Toast.makeText(
+                                this,
+                                "Inventory Item Added",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        if (quantity <= 10) {
+
+                            Toast.makeText(
+                                    this,
+                                    "⚠ Low Stock Alert!",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+
+                        finish();
+
+                    })
+                    .addOnFailureListener(e ->
+
+                            Toast.makeText(
+                                    this,
+                                    e.getMessage(),
+                                    Toast.LENGTH_SHORT
+                            ).show());
+        }
     }
 }

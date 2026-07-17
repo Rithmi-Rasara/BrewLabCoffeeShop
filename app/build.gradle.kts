@@ -34,6 +34,13 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.firebase:firebase-firestore")
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation ("com.cloudinary:cloudinary-android:3.0.2")
+
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.activity:activity:1.10.1")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")

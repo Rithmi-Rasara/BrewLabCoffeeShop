@@ -6,90 +6,73 @@
 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
 
-    app:cardCornerRadius="18dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="#120B08">
+    app:cardBackgroundColor="#2C1810">
 
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:orientation="vertical"
         android:padding="18dp">
 
         <TextView
-
             android:id="@+id/tvItemName"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:text="Coffee Beans"
-
             android:textColor="#FFFFFF"
-
             android:textSize="20sp"
-
             android:textStyle="bold"/>
 
         <TextView
-
             android:id="@+id/tvItemQty"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="8dp"
-
+            android:layout_marginTop="10dp"
             android:text="Quantity : 50"
-
-            android:textColor="#FFB74D"
-
+            android:textColor="#D89A5C"
             android:textSize="16sp"
-
             android:textStyle="bold"/>
 
         <TextView
-
             android:id="@+id/tvStockStatus"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="6dp"
-
+            android:layout_marginTop="8dp"
             android:text="✓ Available"
-
-            android:textColor="#4CAF50"
-
+            android:textColor="#81C784"
             android:textSize="15sp"
-
             android:textStyle="bold"/>
-
 
         <Button
-
-            android:id="@+id/btnDelete"
-
+            android:id="@+id/btnUpdate"
             android:layout_width="match_parent"
-
             android:layout_height="45dp"
-
-            android:layout_marginTop="15dp"
-
-            android:text="Delete Item"
-
+            android:layout_marginTop="10dp"
+            android:text="Update Item"
             android:textAllCaps="false"
-
-            android:textColor="#FFFFFF"
-
             android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#388E3C"/>
 
-            android:backgroundTint="#C62828"/>
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="18dp"
+            android:text="Delete Item"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="#8B5E3C"/>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

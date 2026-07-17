@@ -1,6 +1,5 @@
 package com.nibm.brewlab.Admin.Orders;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -17,11 +16,13 @@ import java.util.ArrayList;
 public class OrdersActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+
     ArrayList<Order> orderList;
 
-    Button pendingOrders, doneOrders;
+    OrdersAdapter ordersAdapter;
 
-    OrdersAdapter adapter;
+    Button allOrders, pendingOrders, doneOrders;
+
     FirebaseFirestore db;
 
     @Override
@@ -29,49 +30,124 @@ public class OrdersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        if (getSupportActionBar() != null)
+        if(getSupportActionBar()!=null){
             getSupportActionBar().hide();
+        }
 
-        recyclerView = findViewById(R.id.ordersRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = findViewById(
+                R.id.ordersRecyclerView
+        );
 
-        pendingOrders = findViewById(R.id.btnPending);
-        doneOrders = findViewById(R.id.btnCompleted);
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
+
+        allOrders = findViewById(
+                R.id.btnAll
+        );
+
+        pendingOrders = findViewById(
+                R.id.btnPending
+        );
+
+        doneOrders = findViewById(
+                R.id.btnComplete
+        );
 
         orderList = new ArrayList<>();
-        adapter = new OrdersAdapter(orderList);
-        recyclerView.setAdapter(adapter);
+
+        ordersAdapter = new OrdersAdapter(
+                orderList
+        );
+
+        recyclerView.setAdapter(
+                ordersAdapter
+        );
 
         db = FirebaseFirestore.getInstance();
 
-        loadOrders();
+        loadOrders("ALL");
 
-        pendingOrders.setOnClickListener(v ->
-                startActivity(new Intent(this, PendingOrdersActivity.class)));
+        allOrders.setOnClickListener(v -> {
 
-        doneOrders.setOnClickListener(v ->
-                startActivity(new Intent(this, DoneOrdersActivity.class)));
+            loadOrders("ALL");
+
+        });
+
+        pendingOrders.setOnClickListener(v -> {
+
+            loadOrders("Pending");
+
+        });
+
+        doneOrders.setOnClickListener(v -> {
+
+            loadOrders("Completed");
+
+        });
+
     }
 
-    private void loadOrders() {
+    private void loadOrders(String filter){
 
         db.collection("Orders")
-                .addSnapshotListener((value, error) -> {
+                .get()
 
-                    if (value == null) return;
+                .addOnSuccessListener(queryDocumentSnapshots -> {
 
                     orderList.clear();
 
-                    for (DocumentSnapshot doc : value.getDocuments()) {
+                    for(DocumentSnapshot doc :
+                            queryDocumentSnapshots.getDocuments()){
 
-                        Order order = doc.toObject(Order.class);
+                        Order order =
+                                doc.toObject(Order.class);
 
-                        if (order != null) {
-                            orderList.add(order);
+                        if(order != null){
+
+                            order.setId(
+                                    doc.getId()
+                            );
+
+                            String status =
+                                    order.getOrderStatus();
+
+                            if(filter.equals("ALL")){
+
+                                orderList.add(order);
+
+                            }
+
+                            else if(filter.equals("Pending")){
+
+                                if(status != null &&
+                                        status.equalsIgnoreCase("Pending")){
+
+                                    orderList.add(order);
+
+                                }
+
+                            }
+
+                            else if(filter.equals("Completed")){
+
+                                if(status != null &&
+                                        status.equalsIgnoreCase("Completed")){
+
+                                    orderList.add(order);
+
+                                }
+
+                            }
+
                         }
+
                     }
 
-                    adapter.notifyDataSetChanged();
+                    ordersAdapter.notifyDataSetChanged();
+
                 });
+
     }
+
 }

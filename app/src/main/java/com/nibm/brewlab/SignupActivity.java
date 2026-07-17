@@ -3,7 +3,6 @@ package com.nibm.brewlab;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
@@ -27,13 +27,19 @@ public class SignupActivity extends AppCompatActivity {
     TextView txtLogin;
 
     FirebaseAuth auth;
+
+    FirebaseFirestore firestore;
+
     DatabaseReference databaseReference;
+
     ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
 
         edtName = findViewById(R.id.edtName);
         edtEmail = findViewById(R.id.edtEmail);
@@ -46,107 +52,209 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup = findViewById(R.id.btnSignup);
         txtLogin = findViewById(R.id.txtLogin);
 
+
         auth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+
+        firestore = FirebaseFirestore.getInstance();
+
+        databaseReference =
+                FirebaseDatabase.getInstance()
+                        .getReference("Users");
+
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setMessage("Creating Account...");
         progressDialog.setCancelable(false);
 
-        getSupportActionBar().hide();
 
-        String[] roles = {"Customer", "Admin","Delivery Person"};
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().hide();
+        }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_dropdown_item,
-                roles
-        );
+
+        String[] roles = {
+                "Customer",
+                "Admin",
+                "Delivery Person"
+        };
+
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        roles
+                );
+
 
         spinnerRole.setAdapter(adapter);
 
+
+
         btnSignup.setOnClickListener(v -> {
 
-            String name = edtName.getText().toString().trim();
-            String email = edtEmail.getText().toString().trim();
-            String phone = edtPhone.getText().toString().trim();
-            String password = edtPassword.getText().toString().trim();
-            String confirmPassword = edtConfirmPassword.getText().toString().trim();
-            String role = spinnerRole.getSelectedItem().toString();
 
-            if (name.isEmpty()) {
+            String name =
+                    edtName.getText().toString().trim();
+
+            String email =
+                    edtEmail.getText().toString().trim();
+
+            String phone =
+                    edtPhone.getText().toString().trim();
+
+            String password =
+                    edtPassword.getText().toString().trim();
+
+            String confirmPassword =
+                    edtConfirmPassword.getText().toString().trim();
+
+            String role =
+                    spinnerRole.getSelectedItem().toString();
+
+
+
+            if(name.isEmpty()){
                 edtName.setError("Enter Name");
                 return;
             }
 
-            if (email.isEmpty()) {
+
+            if(email.isEmpty()){
                 edtEmail.setError("Enter Email");
                 return;
             }
 
-            if (phone.isEmpty()) {
+
+            if(phone.isEmpty()){
                 edtPhone.setError("Enter Phone");
                 return;
             }
 
-            if (password.isEmpty()) {
-                edtPassword.setError("Enter Password");
-                return;
-            }
 
-            if (confirmPassword.isEmpty()) {
-                edtConfirmPassword.setError("Confirm Password");
-                return;
-            }
-
-            if (!password.equals(confirmPassword)) {
-                edtConfirmPassword.setError("Passwords do not match");
-                return;
-            }
-
-            if (password.length() < 6) {
+            if(password.length()<6){
                 edtPassword.setError("Minimum 6 Characters");
                 return;
             }
 
+
+            if(!password.equals(confirmPassword)){
+                edtConfirmPassword.setError("Passwords do not match");
+                return;
+            }
+
+
+
             progressDialog.show();
 
-            auth.createUserWithEmailAndPassword(email, password)
+
+
+            auth.createUserWithEmailAndPassword(email,password)
                     .addOnCompleteListener(task -> {
 
-                        progressDialog.dismiss();
 
-                        if (task.isSuccessful()) {
+                        if(task.isSuccessful()){
 
-                            String uid = auth.getCurrentUser().getUid();
 
-                            HashMap<String, Object> user = new HashMap<>();
-                            user.put("name", name);
-                            user.put("email", email);
-                            user.put("phone", phone);
-                            user.put("role", role);
+                            String uid =
+                                    auth.getCurrentUser().getUid();
 
-                            databaseReference.child(uid).setValue(user);
 
-                            Toast.makeText(SignupActivity.this,
-                                    "Account Created Successfully",
-                                    Toast.LENGTH_SHORT).show();
 
-                            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                            finish();
+                            HashMap<String,Object> user =
+                                    new HashMap<>();
 
-                        } else {
-                            Toast.makeText(SignupActivity.this,
-                                    task.getException().getMessage(),
-                                    Toast.LENGTH_LONG).show();
+
+                            user.put("uid",uid);
+                            user.put("name",name);
+                            user.put("email",email);
+                            user.put("phone",phone);
+                            user.put("role",role);
+                            user.put("status","Pending");
+
+
+
+                            // Save Firestore
+                            firestore.collection("Users")
+                                    .document(uid)
+                                    .set(user);
+
+
+
+                            // Save Realtime Database
+                            databaseReference
+                                    .child(uid)
+                                    .setValue(user)
+                                    .addOnCompleteListener(dbTask -> {
+
+
+                                        progressDialog.dismiss();
+
+
+                                        if(dbTask.isSuccessful()){
+
+
+                                            Toast.makeText(
+                                                    SignupActivity.this,
+                                                    "Account Created Successfully",
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+
+
+
+                                            startActivity(
+                                                    new Intent(
+                                                            SignupActivity.this,
+                                                            LoginActivity.class
+                                                    )
+                                            );
+
+
+                                            finish();
+
+
+                                        }
+
+                                    });
+
+
+
                         }
+                        else{
+
+
+                            progressDialog.dismiss();
+
+
+                            Toast.makeText(
+                                    SignupActivity.this,
+                                    task.getException().getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                        }
+
                     });
+
+
         });
+
+
 
         txtLogin.setOnClickListener(v -> {
-            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+
+            startActivity(
+                    new Intent(
+                            SignupActivity.this,
+                            LoginActivity.class
+                    )
+            );
+
             finish();
+
         });
+
+
     }
 }

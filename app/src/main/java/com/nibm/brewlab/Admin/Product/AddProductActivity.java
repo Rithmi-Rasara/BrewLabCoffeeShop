@@ -7,7 +7,16 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cloudinary.android.MediaManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.cloudinary.android.callback.ErrorInfo;
+import com.cloudinary.android.callback.UploadCallback;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -21,6 +30,11 @@ public class AddProductActivity extends AppCompatActivity {
     EditText edtName, edtPrice, edtCategory, edtDesc;
     Button btnAdd, btnSelectImage;
     ImageView imgProduct;
+    TextView txtTitle;
+
+    Button btnUpdate;
+
+
 
     Uri imageUri;
     String oldImage = "";
@@ -32,6 +46,16 @@ public class AddProductActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Map<String, String> config = new HashMap<>();
+        config.put("cloud_name", "ddsa2doh");
+
+        try {
+            MediaManager.get();
+        } catch (Exception e) {
+            MediaManager.init(this, config);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
@@ -45,13 +69,17 @@ public class AddProductActivity extends AppCompatActivity {
         btnAdd = findViewById(R.id.btnAdd);
         btnSelectImage = findViewById(R.id.btnChooseImage);
         imgProduct = findViewById(R.id.imgProduct);
+        txtTitle = findViewById(R.id.txtTitle);
+        btnUpdate = findViewById(R.id.btnAdd);
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra("id")) {
+        if(intent.hasExtra("id")) {
 
             isUpdate = true;
-            btnAdd.setText("Update Product");
+
+            txtTitle.setText("Update Product");
+            btnUpdate.setText("Update Product");
 
             productId = intent.getStringExtra("id");
 
@@ -59,12 +87,9 @@ public class AddProductActivity extends AppCompatActivity {
             edtPrice.setText(intent.getStringExtra("price"));
             edtCategory.setText(intent.getStringExtra("category"));
             edtDesc.setText(intent.getStringExtra("desc"));
+
             oldImage = intent.getStringExtra("imageUri");
 
-            if (oldImage != null && !oldImage.isEmpty()) {
-                imageUri = Uri.parse(oldImage);
-                imgProduct.setImageURI(imageUri);
-            }
         }
 
         btnSelectImage.setOnClickListener(v -> {
@@ -83,26 +108,80 @@ public class AddProductActivity extends AppCompatActivity {
         String category = edtCategory.getText().toString().trim();
         String desc = edtDesc.getText().toString().trim();
 
-        if (name.isEmpty() || price.isEmpty()) {
-            Toast.makeText(this, "Name & Price required", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty()) {
+            edtName.setError("Enter product name");
             return;
         }
 
-        String image;
+        if (price.isEmpty()) {
+            edtPrice.setError("Enter price");
+            return;
+        }
+
+        if (imageUri == null && !isUpdate) {
+            Toast.makeText(this, "Please choose an image", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (imageUri != null) {
-            image = imageUri.toString();
+
+            MediaManager.get().upload(imageUri)
+                    .unsigned("brewlab")
+                    .callback(new UploadCallback() {
+
+                        @Override
+                        public void onStart(String requestId) {
+                        }
+
+                        @Override
+                        public void onProgress(String requestId, long bytes, long totalBytes) {
+                        }
+
+                        @Override
+                        public void onSuccess(String requestId, Map resultData) {
+
+                            String imageUrl = resultData.get("secure_url").toString();
+
+                            saveToFirestore(name, price, category, desc, imageUrl);
+
+                        }
+
+                        @Override
+                        public void onError(String requestId, ErrorInfo error) {
+
+                            Toast.makeText(AddProductActivity.this,
+                                    error.getDescription(),
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        @Override
+                        public void onReschedule(String requestId, ErrorInfo error) {
+
+                        }
+
+                    }).dispatch();
+
         } else {
-            image = oldImage;
+
+            saveToFirestore(name, price, category, desc, oldImage);
+
         }
+
+    }
+
+    private void saveToFirestore(String name,
+                                 String price,
+                                 String category,
+                                 String desc,
+                                 String imageUrl) {
 
         Product product = new Product(
                 name,
                 price,
                 category,
                 desc,
-                image,
-                "0"
+                imageUrl
         );
 
         if (isUpdate) {
@@ -113,9 +192,7 @@ public class AddProductActivity extends AppCompatActivity {
                     .addOnSuccessListener(unused -> {
                         Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
                         finish();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                    });
 
         } else {
 
@@ -124,18 +201,19 @@ public class AddProductActivity extends AppCompatActivity {
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
                         finish();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                    });
+
         }
+
     }
 
     private final ActivityResultLauncher<Intent> imagePicker =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK &&
-                                result.getData() != null) {
+
+                        if(result.getResultCode()== Activity.RESULT_OK &&
+                                result.getData()!=null) {
 
                             imageUri = result.getData().getData();
                             imgProduct.setImageURI(imageUri);

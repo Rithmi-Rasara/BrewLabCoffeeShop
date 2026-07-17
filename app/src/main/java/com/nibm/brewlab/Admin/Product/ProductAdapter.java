@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,35 +61,44 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         String image = product.getImageUri();
 
-        if(image != null && !image.isEmpty()) {
+        if (image != null && !image.isEmpty()) {
 
             Glide.with(context)
                     .load(image)
+                    .placeholder(R.drawable.cappuccino)
+                    .error(R.drawable.cappuccino)
                     .into(holder.productImage);
 
-        }
-        else {
+        } else {
 
-            holder.productImage.setImageResource(R.drawable.cappuccino);
-
+            Glide.with(context)
+                    .load(R.drawable.cappuccino)
+                    .into(holder.productImage);
         }
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            db.collection("Products")
-                    .document(product.getId())
-                    .delete()
-                    .addOnSuccessListener(unused ->
-                            Toast.makeText(context,
-                                    "Deleted Successfully",
-                                    Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e ->
-                            Toast.makeText(context,
-                                    e.getMessage(),
-                                    Toast.LENGTH_SHORT).show());
+            new AlertDialog.Builder(context)
+                    .setTitle("Delete Product")
+                    .setMessage("Are you sure you want to delete this product?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+
+                        db.collection("Products")
+                                .document(product.getId())
+                                .delete()
+                                .addOnSuccessListener(unused ->
+                                        Toast.makeText(context,
+                                                "Deleted Successfully",
+                                                Toast.LENGTH_SHORT).show()
+                                );
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
         });
 
-        // UPDATE
+
         holder.btnUpdate.setOnClickListener(v -> {
 
             Intent intent = new Intent(context, UpdateProductActivity.class);
@@ -128,6 +138,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
     }
 
+    public void updateFullList() {
+
+        productListFull.clear();
+        productListFull.addAll(productList);
+
+    }
+
     @Override
     public Filter getFilter() {
         return productFilter;
@@ -154,7 +171,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
                 for (Product p : productListFull) {
 
-                    if (p.getName().toLowerCase().contains(text)) {
+                    if (p.getName().toLowerCase().contains(text)
+                            || p.getCategory().toLowerCase().contains(text)) {
+
                         filtered.add(p);
                     }
                 }
@@ -175,9 +194,4 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             notifyDataSetChanged();
         }
     };
-
-    public void updateFullList() {
-        productListFull.clear();
-        productListFull.addAll(productList);
-    }
 }

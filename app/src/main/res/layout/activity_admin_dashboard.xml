@@ -112,9 +112,10 @@
                         android:textColor="#FFFFFF"/>
 
                     <TextView
+                        android:id="@+id/txtProductsCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="120"
+                        android:text="0"
                         android:textColor="#D89A5C"
                         android:textSize="26sp"
                         android:textStyle="bold"/>
@@ -135,9 +136,10 @@
                         android:textColor="#FFFFFF"/>
 
                     <TextView
+                        android:id="@+id/txtOrdersCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="85"
+                        android:text="0"
                         android:textColor="#D89A5C"
                         android:textSize="26sp"
                         android:textStyle="bold"/>
@@ -158,11 +160,36 @@
                         android:textColor="#FFFFFF"/>
 
                     <TextView
+                        android:id="@+id/txtLowStock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Low"
+                        android:text="0"
                         android:textColor="#FF4444"
                         android:textSize="22sp"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="160dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/card_bg"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today's Revenue"
+                        android:textColor="#FFFFFF"/>
+
+                    <TextView
+                        android:id="@+id/txtTodayRevenue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rs. 0"
+                        android:textColor="#D89A5C"
+                        android:textSize="26sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -198,7 +225,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add Product"
+                    android:text="Products"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -291,6 +318,26 @@
                     android:text="Inventory Items"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/manageLoyalty"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                android:background="@drawable/card_bg"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manage Loyalty"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"/>
+
             </LinearLayout>
 
         </GridLayout>
