@@ -1,12 +1,14 @@
 package com.nibm.brewlab.Admin.Orders;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.nibm.brewlab.R;
 
-import com.google.firebase.database.*;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
 
@@ -15,16 +17,15 @@ public class PendingOrdersActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     OrdersAdapter adapter;
     ArrayList<Order> orderList;
-    DatabaseReference ref;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_orders);
 
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null)
             getSupportActionBar().hide();
-        }
 
         recyclerView = findViewById(R.id.recyclerPending);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -33,24 +34,31 @@ public class PendingOrdersActivity extends AppCompatActivity {
         adapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(adapter);
 
-        ref = FirebaseDatabase.getInstance().getReference("Orders");
+        db = FirebaseFirestore.getInstance();
 
-        ref.orderByChild("status").equalTo("Pending")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        orderList.clear();
+        loadPendingOrders();
+    }
 
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            Order order = ds.getValue(Order.class);
+    private void loadPendingOrders() {
+
+        db.collection("Orders")
+                .whereEqualTo("status", "Pending")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    orderList.clear();
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+
+                        Order order = doc.toObject(Order.class);
+
+                        if (order != null) {
+                            order.setId(doc.getId());
                             orderList.add(order);
                         }
-
-                        adapter.notifyDataSetChanged();
                     }
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {}
+                    adapter.notifyDataSetChanged();
                 });
     }
 }

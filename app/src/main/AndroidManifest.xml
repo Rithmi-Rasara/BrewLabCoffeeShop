@@ -26,8 +26,44 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".Admin.AdminDashboardActivity" />
+        <activity
             android:name=".SignupActivity"
             android:exported="false" />
+
+        <activity android:name=".Admin.Feedback.FeedbackActivity" android:exported="false"/>
+        <activity android:name=".Admin.Loyalty.ManageLoyaltyActivity" android:exported="false"/>
+        <activity android:name=".Admin.Category.CategoryProduct" android:exported="false"/>
+        <activity android:name=".Admin.Product.UpdateProductActivity" android:exported="false"/>
+        <activity android:name=".Admin.Inventory.InventoryActivity" android:exported="false"/>
+        <activity android:name=".Admin.Inventory.AddInventoryActivity" android:exported="false"/>
+
+        <activity android:name=".Delivery.DeliveryDashboardActivity" android:exported="false"/>
+        <activity android:name=".Delivery.History.DeliveryHistoryActivity" android:exported="false"/>
+        <activity android:name=".Delivery.Orders.AssignedOrdersActivity" android:exported="false"/>
+        <activity android:name=".Delivery.Orders.DeliveryOrderDetailActivity" android:exported="false"/>
+        <activity android:name=".Delivery.Profile.DeliveryProfileActivity" android:exported="false"/>
+
+
+        <activity android:name=".Admin.Product.ManageProductsActivity" android:exported="false"/>
+        <activity android:name=".Admin.Product.AddProductActivity" android:exported="false"/>
+        <activity android:name=".Admin.Category.CategoryActivity" android:exported="false"/>
+        <activity android:name=".Admin.Delivery.ManageDeliveryActivity" android:exported="false"/>
+        <activity android:name=".Admin.Delivery.DeliveryDetailsActivity" android:exported="false"/>
+        <activity android:name=".Admin.Customers.CustomersActivity" android:exported="false"/>
+        <activity android:name=".Admin.Customers.CustomerDetailsActivity" android:exported="false"/>
+        <activity android:name=".Admin.Orders.OrdersActivity" android:exported="false"/>
+        <activity android:name=".Admin.Orders.OrderDetailActivity" android:exported="false"/>
+        <activity android:name=".Admin.Orders.PendingOrdersActivity" android:exported="false"/>
+        <activity android:name=".Admin.Orders.DoneOrdersActivity" android:exported="false"/>
+        <activity android:name=".Customer.CustomerDashboardActivity" android:exported="false"/>
+        <activity android:name=".Customer.Product.ProductListActivity" android:exported="false"/>
+        <activity android:name=".Customer.Cart.CartActivity" android:exported="false"/>
+        <activity android:name=".Customer.Orders.PlaceOrderActivity" android:exported="false"/>
+        <activity android:name=".Customer.Orders.MyOrdersActivity" android:exported="false"/>
+        <activity android:name=".Customer.Orders.OrderDetailsActivity" android:exported="false"/>
+        <activity android:name=".Customer.Profile.MyProfileActivity" android:exported="false"/>
+        <activity android:name=".Customer.Feedback.FeedbackActivity" android:exported="false"/>
 
     </application>
 

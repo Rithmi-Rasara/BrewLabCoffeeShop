@@ -59,6 +59,10 @@ public class AddProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         db = FirebaseFirestore.getInstance();
 
         edtName = findViewById(R.id.edtName);
@@ -98,7 +102,17 @@ public class AddProductActivity extends AppCompatActivity {
             imagePicker.launch(i);
         });
 
-        btnAdd.setOnClickListener(v -> saveProduct());
+        btnAdd.setOnClickListener(v -> {
+
+            Toast.makeText(
+                    AddProductActivity.this,
+                    "Updating Product...",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            saveProduct();
+
+        });
     }
 
     private void saveProduct() {
@@ -190,8 +204,15 @@ public class AddProductActivity extends AppCompatActivity {
                     .document(productId)
                     .set(product)
                     .addOnSuccessListener(unused -> {
-                        Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(
+                                this,
+                                "Updated Successfully",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
                         finish();
+
                     });
 
         } else {
