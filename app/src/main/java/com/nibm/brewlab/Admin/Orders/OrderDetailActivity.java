@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FieldValue;
+import java.util.HashMap;
+
 import android.widget.Spinner;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,11 +19,7 @@ import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.nibm.brewlab.R;
-
-import java.util.ArrayList;
 
 public class OrderDetailActivity extends AppCompatActivity {
 
@@ -71,6 +70,12 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         orderId = getIntent().getStringExtra("orderId");
 
+        if (orderId == null || orderId.isEmpty()) {
+            Toast.makeText(this, "Order ID Missing", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         String customer =
                 getIntent().getStringExtra("customer");
 
@@ -93,9 +98,23 @@ public class OrderDetailActivity extends AppCompatActivity {
                 "Address : " + address
         );
 
-        btnAssign.setOnClickListener(v ->
-                loadDeliveryPersons()
-        );
+        btnAssign.setOnClickListener(v -> {
+
+            if (deliveryIds.isEmpty()) {
+                Toast.makeText(this,
+                        "No delivery person available",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int pos = spDeliveryPerson.getSelectedItemPosition();
+
+            String deliveryId = deliveryIds.get(pos);
+            String deliveryName = deliveryList.get(pos);
+
+            assignDelivery(deliveryId, deliveryName);
+
+        });
 
         btnBack.setOnClickListener(v ->
                 finish()
@@ -161,38 +180,57 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     }
 
-    private void assignDelivery(String id,String name){
+    private void assignDelivery(String deliveryId, String deliveryName) {
 
-        btnAssign.setOnClickListener(v -> {
+        FirebaseFirestore.getInstance()
+                .collection("Orders")
+                .document(orderId)
+                .update(
+                        "deliveryPersonId", deliveryId,
+                        "deliveryPersonName", deliveryName,
+                        "status", "Preparing"
+                )
+                .addOnSuccessListener(unused -> {
 
-            if(deliveryIds.size()==0){
+                    sendNotification(deliveryId);
 
-                Toast.makeText(this,
-                        "No delivery person available",
-                        Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this,
+                                e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
 
-                return;
-            }
+    }
 
-            int pos = spDeliveryPerson.getSelectedItemPosition();
+    private void sendNotification(String deliveryId) {
 
-            String deliveryId = deliveryIds.get(pos);
-            String deliveryName = deliveryList.get(pos);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            FirebaseFirestore.getInstance()
-                    .collection("Orders")
-                    .document(orderId)
-                    .update(
-                            "deliveryPersonId", deliveryId,
-                            "deliveryPersonName", deliveryName,
-                            "orderStatus", "Preparing"
-                    )
-                    .addOnSuccessListener(unused ->
-                            Toast.makeText(this,
-                                    "Assigned Successfully",
-                                    Toast.LENGTH_SHORT).show());
+        java.util.HashMap<String, Object> notification = new java.util.HashMap<>();
 
-        });
+        notification.put("title", "New Delivery Assigned");
+        notification.put("message", "A new order has been assigned to you.");
+        notification.put("orderId", orderId);
+        notification.put("deliveryPersonId", deliveryId);
+        notification.put("status", "Unread");
+        notification.put("type", "Delivery");
+        notification.put("time", com.google.firebase.firestore.FieldValue.serverTimestamp());
+
+        db.collection("Notifications")
+                .add(notification)
+                .addOnSuccessListener(documentReference -> {
+
+                    Toast.makeText(this,
+                            "Delivery Assigned Successfully",
+                            Toast.LENGTH_SHORT).show();
+
+                    finish();
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this,
+                                e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
 
     }
 
