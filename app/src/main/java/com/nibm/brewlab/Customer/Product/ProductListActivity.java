@@ -128,7 +128,19 @@ public class ProductListActivity extends AppCompatActivity {
         for (String[] d : defaults) {
             String id = productsRef.push().getKey();
             if (id != null) {
+<<<<<<< HEAD
                 Product product = new Product(id, d[0], d[1], d[2], d[3], d[4]);
+=======
+                Product product = new Product(
+                        d[0],
+                        d[1],
+                        d[2],
+                        d[3],
+                        d[4]
+                );
+
+                product.setId(id);
+>>>>>>> origin/develop
                 productsRef.child(id).setValue(product);
             }
         }

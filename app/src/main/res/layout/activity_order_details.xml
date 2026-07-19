@@ -1,207 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#120B08"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/customer_bg"
-        android:scaleType="centerCrop" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#CC120B08" />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="20dp"
+        android:text="Order Details"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/card_bg"
         android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="20dp"
-            android:text="Order Details"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Total Amount"
-                android:textColor="#CFCFCF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtDetailTotal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Rs. 0.00"
-                android:textColor="#FFB74D"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Payment Method"
-                android:textColor="#CFCFCF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtDetailPayment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Cash on Delivery"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delivery Address"
-                android:textColor="#CFCFCF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtDetailAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="-"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Order Placed On"
-                android:textColor="#CFCFCF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtDetailDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="-"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status"
-                android:textColor="#CFCFCF"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/txtDetailStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="Pending"
-                android:textColor="#D89A5C"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/txtDetailTracking"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Order received. Waiting for the shop to start preparing."
-                android:textColor="#FFFFFF"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/txtDeliveryPerson"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="🛵 Delivery Person: -"
-                android:textColor="#D89A5C"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:id="@+id/mapContainer"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="12dp"
-                android:visibility="gone">
-
-                <com.google.android.gms.maps.MapView
-                    android:id="@+id/mapView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:id="@+id/btnNavigate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="12dp"
-                    android:background="@drawable/btn_gradient"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingHorizontal="18dp"
-                    android:paddingVertical="10dp"
-                    android:text="Open in Maps"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp" />
-
-            </FrameLayout>
-
-        </LinearLayout>
+            android:text="Items"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/txtDetailItems"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="8dp"
-            android:text="Items - select what you'd like to reorder"
+            android:layout_marginBottom="12dp"
+            android:text="Cappuccino x2"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/itemsContainer"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Amount"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtDetailTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:layout_marginBottom="12dp"
+            android:text="Rs. 0.00"
+            android:textColor="#FFB74D"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnReorderSelected"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment Method"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtDetailPayment"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:text="Reorder Selected Items"
-            android:textAllCaps="false"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="Cash on Delivery"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#D89A5C" />
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delivery Address"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtDetailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Placed On"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtDetailDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textColor="#CFCFCF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtDetailStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="Pending"
+            android:textColor="#D89A5C"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtDetailTracking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Order received. Waiting for the shop to start preparing."
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
-
-</RelativeLayout>
+</LinearLayout>

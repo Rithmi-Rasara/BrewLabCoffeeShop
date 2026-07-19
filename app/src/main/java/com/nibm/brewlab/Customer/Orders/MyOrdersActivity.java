@@ -69,6 +69,7 @@ public class MyOrdersActivity extends AppCompatActivity {
                     if (order != null) {
                         order.setId(child.getKey());
                         orderList.add(order);
+<<<<<<< HEAD
 
                         // The shop marks an order "Preparing" (or beyond) once
                         // they start making it. The first time this app sees
@@ -82,6 +83,8 @@ public class MyOrdersActivity extends AppCompatActivity {
                                     .child("preparationStartedAt")
                                     .setValue(System.currentTimeMillis());
                         }
+=======
+>>>>>>> origin/develop
                     }
                 }
 

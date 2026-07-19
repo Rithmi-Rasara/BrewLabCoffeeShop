@@ -1,8 +1,12 @@
 package com.nibm.brewlab.Customer.Orders;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+=======
+import java.util.HashMap;
+>>>>>>> origin/develop
 import java.util.Map;
 
 public class CustomerOrder {
@@ -17,6 +21,7 @@ public class CustomerOrder {
     private long timestamp;
     private String itemsSummary;
     private Map<String, Long> itemsData;
+<<<<<<< HEAD
     private List<OrderLineItem> items;
     private long preparationStartedAt;
     private String deliveryPersonUid;
@@ -28,11 +33,20 @@ public class CustomerOrder {
     public CustomerOrder() {
         itemsData = new HashMap<>();
         items = new ArrayList<>();
+=======
+
+    public CustomerOrder() {
+        itemsData = new HashMap<>();
+>>>>>>> origin/develop
     }
 
     public CustomerOrder(String uid, String customerName, String totalAmount, String status,
                           String paymentMethod, String deliveryAddress, long timestamp,
+<<<<<<< HEAD
                           String itemsSummary, Map<String, Long> itemsData, List<OrderLineItem> items) {
+=======
+                          String itemsSummary, Map<String, Long> itemsData) {
+>>>>>>> origin/develop
         this.uid = uid;
         this.customerName = customerName;
         this.totalAmount = totalAmount;
@@ -42,7 +56,10 @@ public class CustomerOrder {
         this.timestamp = timestamp;
         this.itemsSummary = itemsSummary;
         this.itemsData = itemsData;
+<<<<<<< HEAD
         this.items = items;
+=======
+>>>>>>> origin/develop
     }
 
     public String getId() {
@@ -124,6 +141,7 @@ public class CustomerOrder {
     public void setItemsData(Map<String, Long> itemsData) {
         this.itemsData = itemsData;
     }
+<<<<<<< HEAD
 
     public List<OrderLineItem> getItems() {
         return items;
@@ -180,4 +198,6 @@ public class CustomerOrder {
     public void setDeliveredAt(long deliveredAt) {
         this.deliveredAt = deliveredAt;
     }
+=======
+>>>>>>> origin/develop
 }

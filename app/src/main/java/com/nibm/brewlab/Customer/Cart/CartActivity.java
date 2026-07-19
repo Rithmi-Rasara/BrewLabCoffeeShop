@@ -18,17 +18,27 @@ import com.nibm.brewlab.Customer.Orders.PlaceOrderActivity;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.Set;
+=======
+>>>>>>> origin/develop
 
 public class CartActivity extends AppCompatActivity implements CartAdapter.CartActionListener {
 
     RecyclerView recyclerView;
+<<<<<<< HEAD
     TextView txtTotal, txtSelectedTotal, txtEmptyCart;
     Button btnCheckout;
 
     ArrayList<CartItem> cartList;
     Set<String> selectedKeys;
+=======
+    TextView txtTotal, txtEmptyCart;
+    Button btnCheckout;
+
+    ArrayList<CartItem> cartList;
+>>>>>>> origin/develop
     CartAdapter adapter;
 
     @Override
@@ -42,19 +52,27 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
 
         recyclerView = findViewById(R.id.recyclerCart);
         txtTotal = findViewById(R.id.txtCartTotal);
+<<<<<<< HEAD
         txtSelectedTotal = findViewById(R.id.txtSelectedTotal);
+=======
+>>>>>>> origin/develop
         txtEmptyCart = findViewById(R.id.txtEmptyCart);
         btnCheckout = findViewById(R.id.btnCheckout);
 
         cartList = new ArrayList<>();
+<<<<<<< HEAD
         selectedKeys = new HashSet<>();
         adapter = new CartAdapter(this, cartList, selectedKeys, this);
+=======
+        adapter = new CartAdapter(this, cartList, this);
+>>>>>>> origin/develop
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
         btnCheckout.setOnClickListener(v -> {
 
+<<<<<<< HEAD
             if (selectedKeys.isEmpty()) {
                 Toast.makeText(this, "Select at least one item to checkout", Toast.LENGTH_SHORT).show();
                 return;
@@ -63,6 +81,14 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
             Intent intent = new Intent(CartActivity.this, PlaceOrderActivity.class);
             intent.putStringArrayListExtra("selectedCartKeys", new ArrayList<>(selectedKeys));
             startActivity(intent);
+=======
+            if (cartList.isEmpty()) {
+                Toast.makeText(this, "Your cart is empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            startActivity(new Intent(CartActivity.this, PlaceOrderActivity.class));
+>>>>>>> origin/develop
         });
 
         loadCart();
@@ -77,10 +103,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
                 cartList.clear();
                 double total = 0;
 
+<<<<<<< HEAD
                 // Cart items that got removed by the customer shouldn't
                 // linger as "selected" for a future checkout.
                 Set<String> existingKeys = new HashSet<>();
 
+=======
+>>>>>>> origin/develop
                 for (DataSnapshot child : snapshot.getChildren()) {
 
                     CartItem item = child.getValue(CartItem.class);
@@ -88,7 +117,10 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
                     if (item != null) {
                         item.setCartKey(child.getKey());
                         cartList.add(item);
+<<<<<<< HEAD
                         existingKeys.add(child.getKey());
+=======
+>>>>>>> origin/develop
 
                         try {
                             total += Double.parseDouble(item.getPrice()) * item.getQuantity();
@@ -97,6 +129,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
                     }
                 }
 
+<<<<<<< HEAD
                 selectedKeys.retainAll(existingKeys);
 
                 adapter.notifyDataSetChanged();
@@ -105,6 +138,13 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
                 txtEmptyCart.setVisibility(cartList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
 
                 updateSelectedTotal();
+=======
+                adapter.notifyDataSetChanged();
+
+                txtTotal.setText("Total: Rs. " + String.format("%.2f", total));
+                txtEmptyCart.setVisibility(cartList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+                btnCheckout.setEnabled(!cartList.isEmpty());
+>>>>>>> origin/develop
             }
 
             @Override
@@ -114,6 +154,7 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
         });
     }
 
+<<<<<<< HEAD
     private void updateSelectedTotal() {
 
         double selectedTotal = 0;
@@ -137,6 +178,8 @@ public class CartActivity extends AppCompatActivity implements CartAdapter.CartA
         updateSelectedTotal();
     }
 
+=======
+>>>>>>> origin/develop
     @Override
     public void onIncrease(CartItem item) {
         CartManager.updateQuantity(item.getCartKey(), item.getQuantity() + 1);

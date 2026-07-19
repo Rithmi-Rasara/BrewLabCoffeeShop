@@ -11,6 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+<<<<<<< HEAD
+=======
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+>>>>>>> origin/develop
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -24,6 +29,11 @@ public class ManageProductsActivity extends AppCompatActivity {
     ArrayList<Product> productList;
     ProductAdapter adapter;
 
+<<<<<<< HEAD
+=======
+    FirebaseFirestore db;
+
+>>>>>>> origin/develop
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +47,7 @@ public class ManageProductsActivity extends AppCompatActivity {
         searchBox = findViewById(R.id.searchBox);
         addBtn = findViewById(R.id.addBtn);
 
+<<<<<<< HEAD
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         productList = new ArrayList<>();
@@ -69,4 +80,101 @@ public class ManageProductsActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
     }
+=======
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
+
+        productList = new ArrayList<>();
+
+        adapter = new ProductAdapter(
+                this,
+                productList
+        );
+
+        recyclerView.setAdapter(adapter);
+
+        db = FirebaseFirestore.getInstance();
+
+        loadProducts();
+
+        addBtn.setOnClickListener(v -> {
+
+            Intent intent = new Intent(
+                    ManageProductsActivity.this,
+                    AddProductActivity.class
+            );
+
+            startActivity(intent);
+
+        });
+
+        searchBox.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(
+                    CharSequence s,
+                    int start,
+                    int count,
+                    int after
+            ) {
+
+            }
+
+            @Override
+            public void onTextChanged(
+                    CharSequence s,
+                    int start,
+                    int before,
+                    int count
+            ) {
+
+                adapter.getFilter()
+                        .filter(s.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+        });
+
+    }
+
+    private void loadProducts() {
+
+        db.collection("Products")
+                .addSnapshotListener((value, error) -> {
+
+                    if(error != null || value == null){
+                        return;
+                    }
+
+                    productList.clear();
+
+                    for(DocumentSnapshot doc : value.getDocuments()){
+
+                        Product product =
+                                doc.toObject(Product.class);
+
+                        if(product != null){
+
+                            product.setId(
+                                    doc.getId()
+                            );
+
+                            productList.add(product);
+
+                        }
+
+                    }
+                    adapter.updateFullList();
+                    adapter.notifyDataSetChanged();
+                });
+
+    }
+
+>>>>>>> origin/develop
 }

@@ -27,9 +27,13 @@ import com.nibm.brewlab.Customer.Cart.CartItem;
 import com.nibm.brewlab.Customer.Cart.CartManager;
 import com.nibm.brewlab.R;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+=======
+import java.util.HashMap;
+>>>>>>> origin/develop
 import java.util.Map;
 
 public class PlaceOrderActivity extends AppCompatActivity {
@@ -45,8 +49,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
     double cartTotal = 0;
     String itemsSummary = "";
     Map<String, Long> itemsData = new HashMap<>();
+<<<<<<< HEAD
     List<OrderLineItem> lineItems = new ArrayList<>();
     ArrayList<String> selectedCartKeys = new ArrayList<>();
+=======
+>>>>>>> origin/develop
 
     FirebaseAuth auth;
     DatabaseReference ordersRef, usersRef;
@@ -95,6 +102,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
         formatCardNumberInput();
         formatExpiryInput();
 
+<<<<<<< HEAD
         ArrayList<String> passedKeys = getIntent().getStringArrayListExtra("selectedCartKeys");
 
         if (passedKeys == null || passedKeys.isEmpty()) {
@@ -105,6 +113,8 @@ public class PlaceOrderActivity extends AppCompatActivity {
 
         selectedCartKeys = passedKeys;
 
+=======
+>>>>>>> origin/develop
         loadCartSummary();
 
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
@@ -188,6 +198,7 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 StringBuilder summary = new StringBuilder();
                 cartTotal = 0;
                 itemsData.clear();
+<<<<<<< HEAD
                 lineItems.clear();
 
                 for (DataSnapshot child : snapshot.getChildren()) {
@@ -196,6 +207,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     // on the Cart screen - the rest stay untouched in the cart.
                     if (!selectedCartKeys.contains(child.getKey())) continue;
 
+=======
+
+                for (DataSnapshot child : snapshot.getChildren()) {
+
+>>>>>>> origin/develop
                     CartItem item = child.getValue(CartItem.class);
 
                     if (item != null) {
@@ -212,12 +228,19 @@ public class PlaceOrderActivity extends AppCompatActivity {
                                 .append(item.getQuantity())
                                 .append(", ");
 
+<<<<<<< HEAD
                         // Quantities are combined per product so old-style
                         // "reorder all" (if ever used again) knows totals.
+=======
+                        // Quantities are combined per product so "Reorder" can
+                        // add the right total amount back to the cart later
+                        // (reorder uses default customization, see MyOrdersAdapter).
+>>>>>>> origin/develop
                         long existingQty = itemsData.containsKey(item.getProductId())
                                 ? itemsData.get(item.getProductId()) : 0;
                         itemsData.put(item.getProductId(), existingQty + item.getQuantity());
 
+<<<<<<< HEAD
                         int brewTime = OrderLineItem.estimateBrewTime(item.getCategory(), item.getSize());
 
                         lineItems.add(new OrderLineItem(
@@ -233,6 +256,8 @@ public class PlaceOrderActivity extends AppCompatActivity {
                                 brewTime
                         ));
 
+=======
+>>>>>>> origin/develop
                         try {
                             cartTotal += Double.parseDouble(item.getPrice()) * item.getQuantity();
                         } catch (NumberFormatException ignored) {
@@ -337,8 +362,12 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     address,
                     System.currentTimeMillis(),
                     itemsSummary,
+<<<<<<< HEAD
                     itemsData,
                     lineItems
+=======
+                    itemsData
+>>>>>>> origin/develop
             );
 
             if (orderId != null) {
@@ -354,9 +383,13 @@ public class PlaceOrderActivity extends AppCompatActivity {
                         usersRef.child(uid).child("loyaltyPoints").setValue(updated);
                     });
 
+<<<<<<< HEAD
                     // Items are intentionally left in the cart after checkout
                     // (customer asked for this) so they can be checked out
                     // again later without re-adding from the menu.
+=======
+                    CartManager.clearCart();
+>>>>>>> origin/develop
 
                     Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_LONG).show();
 

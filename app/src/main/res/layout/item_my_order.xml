@@ -32,25 +32,6 @@
             android:textColor="#BBBBBB"
             android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/txtOrderBrewTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="⏱ Brew time: ~4 mins"
-            android:textColor="#D89A5C"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/txtOrderPrepStarted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="🔥 Preparation Started: 01 Jan 2026, 10:05 AM"
-            android:textColor="#8BC34A"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,14 +62,15 @@
 
         </LinearLayout>
 
-        <TextView
+        <Button
+            android:id="@+id/btnReorder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_marginTop="10dp"
-            android:gravity="end"
-            android:text="Tap to view details &amp; reorder items →"
-            android:textColor="#D89A5C"
-            android:textSize="12sp" />
+            android:text="Reorder"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#D89A5C" />
 
     </LinearLayout>
 

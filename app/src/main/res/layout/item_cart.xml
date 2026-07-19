@@ -15,12 +15,6 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <CheckBox
-            android:id="@+id/checkCartItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="#D89A5C" />
-
         <ImageView
             android:id="@+id/cartImage"
             android:layout_width="70dp"
@@ -66,18 +60,14 @@
 
         </LinearLayout>
 
-        <TextView
+        <ImageView
             android:id="@+id/btnMinus"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/card_bg"
+            android:src="@android:drawable/ic_media_previous"
+            android:tint="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="center"
-            android:text="−"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
             android:contentDescription="Decrease" />
 
         <TextView
@@ -90,18 +80,14 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
+        <ImageView
             android:id="@+id/btnPlus"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/card_bg"
+            android:src="@android:drawable/ic_media_next"
+            android:tint="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="center"
-            android:text="+"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:textStyle="bold"
             android:contentDescription="Increase" />
 
         <ImageView
