@@ -47,7 +47,7 @@ public class OrdersActivity extends AppCompatActivity {
 
         allOrders.setOnClickListener(v -> loadOrders("ALL"));
         pendingOrders.setOnClickListener(v -> loadOrders("Pending"));
-        doneOrders.setOnClickListener(v -> loadOrders("Completed"));
+        doneOrders.setOnClickListener(v -> loadOrders("Delivered"));
     }
 
     private void loadOrders(String filter) {
@@ -77,7 +77,6 @@ public class OrdersActivity extends AppCompatActivity {
                             order.setTotalAmount(total.doubleValue());
                         }
 
-                        // තාවකාලිකව Customer Name වෙනුවට User ID දානවා
                         order.setCustomerName(doc.getString("userId"));
 
                         String status = order.getOrderStatus();
@@ -92,9 +91,9 @@ public class OrdersActivity extends AppCompatActivity {
                                 orderList.add(order);
                             }
 
-                        } else if ("Completed".equals(filter)) {
+                        } else if ("Delivered".equals(filter)) {
 
-                            if (status != null && status.equalsIgnoreCase("completed")) {
+                            if (status != null && status.equalsIgnoreCase("Delivered")) {
                                 orderList.add(order);
                             }
                         }

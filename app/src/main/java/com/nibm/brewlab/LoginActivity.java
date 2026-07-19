@@ -21,6 +21,7 @@ import com.nibm.brewlab.Customer.CustomerDashboardActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.nibm.brewlab.Delivery.DeliveryDashboardActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -156,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                                         case "delivery person":
                                         case "delivery":
                                             intent = new Intent(LoginActivity.this,
-                                                    DeliveryDetailsActivity.class);
+                                                    DeliveryDashboardActivity.class);
                                             break;
 
                                         default:

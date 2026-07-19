@@ -69,6 +69,7 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         });
 
+
         searchBox.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -101,6 +102,13 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         });
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadProducts();
     }
 
     private void loadProducts() {
