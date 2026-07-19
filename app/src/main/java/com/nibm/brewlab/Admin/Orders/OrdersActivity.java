@@ -16,13 +16,9 @@ import java.util.ArrayList;
 public class OrdersActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-
     ArrayList<Order> orderList;
-
     OrdersAdapter ordersAdapter;
-
     Button allOrders, pendingOrders, doneOrders;
-
     FirebaseFirestore db;
 
     @Override
@@ -30,124 +26,81 @@ public class OrdersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
-        recyclerView = findViewById(
-                R.id.ordersRecyclerView
-        );
+        recyclerView = findViewById(R.id.ordersRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
-
-        allOrders = findViewById(
-                R.id.btnAll
-        );
-
-        pendingOrders = findViewById(
-                R.id.btnPending
-        );
-
-        doneOrders = findViewById(
-                R.id.btnComplete
-        );
+        allOrders = findViewById(R.id.btnAll);
+        pendingOrders = findViewById(R.id.btnPending);
+        doneOrders = findViewById(R.id.btnComplete);
 
         orderList = new ArrayList<>();
-
-        ordersAdapter = new OrdersAdapter(
-                orderList
-        );
-
-        recyclerView.setAdapter(
-                ordersAdapter
-        );
+        ordersAdapter = new OrdersAdapter(orderList);
+        recyclerView.setAdapter(ordersAdapter);
 
         db = FirebaseFirestore.getInstance();
 
         loadOrders("ALL");
 
-        allOrders.setOnClickListener(v -> {
-
-            loadOrders("ALL");
-
-        });
-
-        pendingOrders.setOnClickListener(v -> {
-
-            loadOrders("Pending");
-
-        });
-
-        doneOrders.setOnClickListener(v -> {
-
-            loadOrders("Completed");
-
-        });
-
+        allOrders.setOnClickListener(v -> loadOrders("ALL"));
+        pendingOrders.setOnClickListener(v -> loadOrders("Pending"));
+        doneOrders.setOnClickListener(v -> loadOrders("Completed"));
     }
 
-    private void loadOrders(String filter){
+    private void loadOrders(String filter) {
 
         db.collection("Orders")
                 .get()
-
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
                     orderList.clear();
 
-                    for(DocumentSnapshot doc :
-                            queryDocumentSnapshots.getDocuments()){
+                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
 
-                        Order order =
-                                doc.toObject(Order.class);
+                        Order order = new Order();
 
-                        if(order != null){
+                        order.setId(doc.getId());
+                        order.setUserId(doc.getString("userId"));
+                        order.setDeliveryAddress(doc.getString("address"));
+                        order.setPaymentMethod(doc.getString("payment"));
+                        order.setOrderStatus(doc.getString("status"));
 
-                            order.setId(
-                                    doc.getId()
-                            );
-
-                            String status =
-                                    order.getOrderStatus();
-
-                            if(filter.equals("ALL")){
-
-                                orderList.add(order);
-
-                            }
-
-                            else if(filter.equals("Pending")){
-
-                                if(status != null &&
-                                        status.equalsIgnoreCase("Pending")){
-
-                                    orderList.add(order);
-
-                                }
-
-                            }
-
-                            else if(filter.equals("Completed")){
-
-                                if(status != null &&
-                                        status.equalsIgnoreCase("Completed")){
-
-                                    orderList.add(order);
-
-                                }
-
-                            }
-
+                        Number total = doc.getDouble("total");
+                        if (total == null) {
+                            total = doc.getLong("total");
                         }
 
+                        if (total != null) {
+                            order.setTotalAmount(total.doubleValue());
+                        }
+
+                        // තාවකාලිකව Customer Name වෙනුවට User ID දානවා
+                        order.setCustomerName(doc.getString("userId"));
+
+                        String status = order.getOrderStatus();
+
+                        if ("ALL".equals(filter)) {
+
+                            orderList.add(order);
+
+                        } else if ("Pending".equals(filter)) {
+
+                            if (status != null && status.equalsIgnoreCase("pending")) {
+                                orderList.add(order);
+                            }
+
+                        } else if ("Completed".equals(filter)) {
+
+                            if (status != null && status.equalsIgnoreCase("completed")) {
+                                orderList.add(order);
+                            }
+                        }
                     }
 
                     ordersAdapter.notifyDataSetChanged();
-
                 });
-
     }
-
 }
