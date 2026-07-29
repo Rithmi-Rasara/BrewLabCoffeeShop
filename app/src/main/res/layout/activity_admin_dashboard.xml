@@ -40,7 +40,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Welcome Back 👋"
+                    android:text="Welcome Back !"
                     android:textColor="#CFCFCF"
                     android:textSize="14sp"/>
 
@@ -105,6 +105,12 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_products"
+                        android:tint="#D4AF37"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -128,6 +134,12 @@
                     android:background="@drawable/card_bg"
                     android:gravity="center"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_orders"
+                        android:tint="#4CAF50"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -159,6 +171,12 @@
                         android:text="Stock"
                         android:textColor="#FFFFFF"/>
 
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_warning"
+                        android:tint="#FF9800" />
+
                     <TextView
                         android:id="@+id/txtLowStock"
                         android:layout_width="wrap_content"
@@ -176,6 +194,12 @@
                     android:background="@drawable/card_bg"
                     android:gravity="center"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_money"
+                        android:tint="#FFD700"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -222,12 +246,20 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_products"
+                    android:tint="#D4AF37"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Products"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -240,16 +272,24 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_orders"
+                    android:tint="#4CAF50"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Orders"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
+
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/manageCategories"
+                android:id="@+id/manageDelivery"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_columnWeight="1"
@@ -258,10 +298,16 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_delivery"
+                    android:tint="#26A69A"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Categories"
+                    android:text="Delivery Person"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -276,6 +322,12 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_customers"
+                    android:tint="#AB47BC"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -285,7 +337,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/manageDelivery"
+                android:id="@+id/manageCategories"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_columnWeight="1"
@@ -294,10 +346,16 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_category"
+                    android:tint="#29B6F6"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delivery Person"
+                    android:text="Categories"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold"/>
             </LinearLayout>
@@ -311,6 +369,12 @@
                 android:background="@drawable/card_bg"
                 android:gravity="center"
                 android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_inventory"
+                    android:tint="#FF9800"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -329,6 +393,12 @@
                 android:background="@drawable/card_bg"
                 android:gravity="center"
                 android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_loyalty"
+                    android:tint="#26A69A"/>
 
                 <TextView
                     android:layout_width="wrap_content"
