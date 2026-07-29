@@ -20,6 +20,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nibm.brewlab.LoginActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import com.google.firebase.Timestamp;
 import java.util.Calendar;
 
@@ -93,7 +97,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadProductsCount();
         loadOrdersCount();
         loadLowStockCount();
-        loadTodayRevenue();
+        calculateTodayRevenue();
 
         loadFeedback();
     }
@@ -184,41 +188,47 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     }
 
-    private void loadTodayRevenue() {
+    private void calculateTodayRevenue(){
 
-        Calendar calendar = Calendar.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
+        String today = new SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.getDefault()
+        ).format(new Date());
 
-        Timestamp start = new Timestamp(calendar.getTime());
 
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-
-        Timestamp end = new Timestamp(calendar.getTime());
-
-        FirebaseFirestore.getInstance()
-                .collection("Orders")
-                .whereGreaterThanOrEqualTo("orderDate", start)
-                .whereLessThan("orderDate", end)
-                .whereEqualTo("orderStatus", "Completed")
+        db.collection("orders")
+                .whereEqualTo("date", today)
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
 
                     double total = 0;
 
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
 
-                        Double amount = doc.getDouble("totalAmount");
+                    for(DocumentSnapshot document : queryDocumentSnapshots){
 
-                        if (amount != null) {
+                        Double amount =
+                                document.getDouble("totalAmount");
+
+
+                        if(amount != null){
                             total += amount;
                         }
+
                     }
 
-                    txtTodayRevenue.setText("Rs. " + total);
+
+                    txtTodayRevenue.setText(
+                            "Rs. " + String.format("%.2f", total)
+                    );
+
+
+                })
+                .addOnFailureListener(e -> {
+
+                    txtTodayRevenue.setText("Rs. 0");
 
                 });
 
