@@ -24,8 +24,7 @@ public class DoneOrdersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_done_orders);
 
-        if (getSupportActionBar() != null)
-            getSupportActionBar().hide();
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
 
         recyclerView = findViewById(R.id.recyclerDone);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -41,24 +40,21 @@ public class DoneOrdersActivity extends AppCompatActivity {
 
     private void loadDoneOrders() {
 
-        db.collection("Orders")
-                .whereEqualTo("status", "Completed")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("Orders").whereEqualTo("status", "Completed").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    orderList.clear();
+            orderList.clear();
 
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
 
-                        Order order = doc.toObject(Order.class);
+                Order order = doc.toObject(Order.class);
 
-                        if (order != null) {
-                            order.setId(doc.getId());
-                            orderList.add(order);
-                        }
-                    }
+                if (order != null) {
+                    order.setId(doc.getId());
+                    orderList.add(order);
+                }
+            }
 
-                    adapter.notifyDataSetChanged();
-                });
+            adapter.notifyDataSetChanged();
+        });
     }
 }

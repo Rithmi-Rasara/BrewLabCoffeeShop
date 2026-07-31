@@ -28,7 +28,7 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
     private FirebaseFirestore db;
 
 
-    public LoyaltyAdapter(Context context, ArrayList<Loyalty> loyaltyList){
+    public LoyaltyAdapter(Context context, ArrayList<Loyalty> loyaltyList) {
 
         this.context = context;
         this.loyaltyList = loyaltyList;
@@ -41,8 +41,7 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_loyalty, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_loyalty, parent, false);
 
         return new ViewHolder(view);
     }
@@ -58,14 +57,9 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
         holder.txtName.setText(loyalty.getName());
         holder.txtEmail.setText(loyalty.getEmail());
 
-        holder.txtPoints.setText(
-                "Points : " + loyalty.getPoints()
-        );
+        holder.txtPoints.setText("Points : " + loyalty.getPoints());
 
-        holder.txtLevel.setText(
-                "Level : " + loyalty.getLevel()
-        );
-
+        holder.txtLevel.setText("Level : " + loyalty.getLevel());
 
 
         holder.btnUpdatePoints.setOnClickListener(v -> {
@@ -76,70 +70,45 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
             input.setHint("Enter points");
 
 
-            AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle("Update Loyalty Points")
-                    .setView(input)
+            AlertDialog dialog = new AlertDialog.Builder(context).setTitle("Update Loyalty Points").setView(input)
 
-                    .setPositiveButton("Update",
-                            (dialogInterface, which) -> {
+                    .setPositiveButton("Update", (dialogInterface, which) -> {
 
 
-                                String value = input.getText().toString();
+                        String value = input.getText().toString();
 
 
-                                if(value.isEmpty()){
+                        if (value.isEmpty()) {
 
-                                    Toast.makeText(
-                                            context,
-                                            "Enter points",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
+                            Toast.makeText(context, "Enter points", Toast.LENGTH_SHORT).show();
 
-                                    return;
-                                }
+                            return;
+                        }
 
 
-                                int newPoints =
-                                        Integer.parseInt(value);
+                        int newPoints = Integer.parseInt(value);
 
 
-
-                                String newLevel =
-                                        Loyalty.calculateLevel(newPoints);
+                        String newLevel = Loyalty.calculateLevel(newPoints);
 
 
-
-                                db.collection("Loyalty")
-                                        .document(loyalty.getId())
-                                        .update(
-                                                "points",
-                                                newPoints,
-                                                "level",
-                                                newLevel
-                                        )
-                                        .addOnSuccessListener(unused -> {
+                        db.collection("Loyalty").document(loyalty.getId()).update("points", newPoints, "level", newLevel).addOnSuccessListener(unused -> {
 
 
-                                            loyalty.setPoints(newPoints);
-                                            loyalty.setLevel(newLevel);
+                            loyalty.setPoints(newPoints);
+                            loyalty.setLevel(newLevel);
 
 
-                                            notifyItemChanged(position);
+                            notifyItemChanged(position);
 
 
+                            Toast.makeText(context, "Points Updated", Toast.LENGTH_SHORT).show();
 
-                                            Toast.makeText(
-                                                    context,
-                                                    "Points Updated",
-                                                    Toast.LENGTH_SHORT
-                                            ).show();
+                        });
 
-                                        });
+                    })
 
-                            })
-
-                    .setNegativeButton("Cancel",
-                            null)
+                    .setNegativeButton("Cancel", null)
 
                     .create();
 
@@ -153,14 +122,12 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
     }
 
 
-
     @Override
     public int getItemCount() {
 
         return loyaltyList.size();
 
     }
-
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -174,27 +141,21 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
         Button btnUpdatePoints;
 
 
-
         public ViewHolder(@NonNull View itemView) {
 
             super(itemView);
 
 
-            txtName =
-                    itemView.findViewById(R.id.txtName);
+            txtName = itemView.findViewById(R.id.txtName);
 
-            txtEmail =
-                    itemView.findViewById(R.id.txtEmail);
+            txtEmail = itemView.findViewById(R.id.txtEmail);
 
-            txtPoints =
-                    itemView.findViewById(R.id.txtPoints);
+            txtPoints = itemView.findViewById(R.id.txtPoints);
 
-            txtLevel =
-                    itemView.findViewById(R.id.txtLevel);
+            txtLevel = itemView.findViewById(R.id.txtLevel);
 
 
-            btnUpdatePoints =
-                    itemView.findViewById(R.id.btnUpdatePoints);
+            btnUpdatePoints = itemView.findViewById(R.id.btnUpdatePoints);
 
         }
     }

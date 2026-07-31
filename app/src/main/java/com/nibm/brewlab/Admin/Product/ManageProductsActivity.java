@@ -41,16 +41,11 @@ public class ManageProductsActivity extends AppCompatActivity {
         searchBox = findViewById(R.id.searchBox);
         addBtn = findViewById(R.id.addBtn);
 
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         productList = new ArrayList<>();
 
-        adapter = new ProductAdapter(
-                this,
-                productList
-        );
+        adapter = new ProductAdapter(this, productList);
 
         recyclerView.setAdapter(adapter);
 
@@ -60,10 +55,7 @@ public class ManageProductsActivity extends AppCompatActivity {
 
         addBtn.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    ManageProductsActivity.this,
-                    AddProductActivity.class
-            );
+            Intent intent = new Intent(ManageProductsActivity.this, AddProductActivity.class);
 
             startActivity(intent);
 
@@ -73,25 +65,14 @@ public class ManageProductsActivity extends AppCompatActivity {
         searchBox.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void beforeTextChanged(
-                    CharSequence s,
-                    int start,
-                    int count,
-                    int after
-            ) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged(
-                    CharSequence s,
-                    int start,
-                    int before,
-                    int count
-            ) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                adapter.getFilter()
-                        .filter(s.toString());
+                adapter.getFilter().filter(s.toString());
 
             }
 
@@ -113,34 +94,30 @@ public class ManageProductsActivity extends AppCompatActivity {
 
     private void loadProducts() {
 
-        db.collection("Products")
-                .addSnapshotListener((value, error) -> {
+        db.collection("Products").addSnapshotListener((value, error) -> {
 
-                    if(error != null || value == null){
-                        return;
-                    }
+            if (error != null || value == null) {
+                return;
+            }
 
-                    productList.clear();
+            productList.clear();
 
-                    for(DocumentSnapshot doc : value.getDocuments()){
+            for (DocumentSnapshot doc : value.getDocuments()) {
 
-                        Product product =
-                                doc.toObject(Product.class);
+                Product product = doc.toObject(Product.class);
 
-                        if(product != null){
+                if (product != null) {
 
-                            product.setId(
-                                    doc.getId()
-                            );
+                    product.setId(doc.getId());
 
-                            productList.add(product);
+                    productList.add(product);
 
-                        }
+                }
 
-                    }
-                    adapter.updateFullList();
-                    adapter.notifyDataSetChanged();
-                });
+            }
+            adapter.updateFullList();
+            adapter.notifyDataSetChanged();
+        });
 
     }
 

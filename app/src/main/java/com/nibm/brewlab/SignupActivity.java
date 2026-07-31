@@ -57,9 +57,7 @@ public class SignupActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
 
-        databaseReference =
-                FirebaseDatabase.getInstance()
-                        .getReference("Users");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
 
         progressDialog = new ProgressDialog(this);
@@ -68,188 +66,136 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
 
-        String[] roles = {
-                "Customer",
-                "Admin",
-                "Delivery Person"
-        };
+        String[] roles = {"Customer", "Admin", "Delivery Person"};
 
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        roles
-                );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, roles);
 
 
         spinnerRole.setAdapter(adapter);
 
 
-
         btnSignup.setOnClickListener(v -> {
 
 
-            String name =
-                    edtName.getText().toString().trim();
+            String name = edtName.getText().toString().trim();
 
-            String email =
-                    edtEmail.getText().toString().trim();
+            String email = edtEmail.getText().toString().trim();
 
-            String phone =
-                    edtPhone.getText().toString().trim();
+            String phone = edtPhone.getText().toString().trim();
 
-            String password =
-                    edtPassword.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
 
-            String confirmPassword =
-                    edtConfirmPassword.getText().toString().trim();
+            String confirmPassword = edtConfirmPassword.getText().toString().trim();
 
-            String role =
-                    spinnerRole.getSelectedItem().toString();
+            String role = spinnerRole.getSelectedItem().toString();
 
 
-
-            if(name.isEmpty()){
+            if (name.isEmpty()) {
                 edtName.setError("Enter Name");
                 return;
             }
 
 
-            if(email.isEmpty()){
+            if (email.isEmpty()) {
                 edtEmail.setError("Enter Email");
                 return;
             }
 
 
-            if(phone.isEmpty()){
+            if (phone.isEmpty()) {
                 edtPhone.setError("Enter Phone");
                 return;
             }
 
 
-            if(password.length()<6){
+            if (password.length() < 6) {
                 edtPassword.setError("Minimum 6 Characters");
                 return;
             }
 
 
-            if(!password.equals(confirmPassword)){
+            if (!password.equals(confirmPassword)) {
                 edtConfirmPassword.setError("Passwords do not match");
                 return;
             }
 
 
-
             progressDialog.show();
 
 
-
-            auth.createUserWithEmailAndPassword(email,password)
-                    .addOnCompleteListener(task -> {
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
 
 
-                        if(task.isSuccessful()){
+                if (task.isSuccessful()) {
 
 
-                            String uid =
-                                    auth.getCurrentUser().getUid();
+                    String uid = auth.getCurrentUser().getUid();
 
 
-
-                            HashMap<String,Object> user =
-                                    new HashMap<>();
+                    HashMap<String, Object> user = new HashMap<>();
 
 
-                            user.put("uid",uid);
-                            user.put("name",name);
-                            user.put("email",email);
-                            user.put("phone",phone);
-                            user.put("role",role);
-                            user.put("status","Pending");
+                    user.put("uid", uid);
+                    user.put("name", name);
+                    user.put("email", email);
+                    user.put("phone", phone);
+                    user.put("role", role);
+                    user.put("status", "Pending");
 
 
-
-                            // Save Firestore
-                            firestore.collection("Users")
-                                    .document(uid)
-                                    .set(user);
+                    // Save Firestore
+                    firestore.collection("Users").document(uid).set(user);
 
 
-
-                            // Save Realtime Database
-                            databaseReference
-                                    .child(uid)
-                                    .setValue(user)
-                                    .addOnCompleteListener(dbTask -> {
+                    // Save Realtime Database
+                    databaseReference.child(uid).setValue(user).addOnCompleteListener(dbTask -> {
 
 
-                                        progressDialog.dismiss();
+                        progressDialog.dismiss();
 
 
-                                        if(dbTask.isSuccessful()){
+                        if (dbTask.isSuccessful()) {
 
 
-                                            Toast.makeText(
-                                                    SignupActivity.this,
-                                                    "Account Created Successfully",
-                                                    Toast.LENGTH_SHORT
-                                            ).show();
+                            Toast.makeText(SignupActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
 
 
-
-                                            startActivity(
-                                                    new Intent(
-                                                            SignupActivity.this,
-                                                            LoginActivity.class
-                                                    )
-                                            );
+                            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
 
 
-                                            finish();
+                            finish();
 
-
-                                        }
-
-                                    });
-
-
-
-                        }
-                        else{
-
-
-                            progressDialog.dismiss();
-
-
-                            Toast.makeText(
-                                    SignupActivity.this,
-                                    task.getException().getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
 
                         }
 
                     });
 
 
-        });
+                } else {
 
+
+                    progressDialog.dismiss();
+
+
+                    Toast.makeText(SignupActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+
+            });
+
+
+        });
 
 
         txtLogin.setOnClickListener(v -> {
 
-            startActivity(
-                    new Intent(
-                            SignupActivity.this,
-                            LoginActivity.class
-                    )
-            );
+            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
 
             finish();
 

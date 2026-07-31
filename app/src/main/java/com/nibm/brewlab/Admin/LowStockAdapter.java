@@ -27,8 +27,7 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_low_stock, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_low_stock, parent, false);
 
         return new ViewHolder(view);
     }
@@ -47,31 +46,20 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
         int qty = item.getQuantity();
 
 
-        holder.txtStockQty.setText(
-                "Remaining Stock: " + qty
-        );
+        holder.txtStockQty.setText("Remaining Stock: " + qty);
 
 
-        if(qty <= 3){
+        if (qty <= 3) {
 
-            holder.txtStockQty.setTextColor(
-                    holder.itemView.getResources()
-                            .getColor(android.R.color.holo_red_light)
-            );
+            holder.txtStockQty.setTextColor(holder.itemView.getResources().getColor(android.R.color.holo_red_light));
 
-        }else if(qty <= 10){
+        } else if (qty <= 10) {
 
-            holder.txtStockQty.setTextColor(
-                    holder.itemView.getResources()
-                            .getColor(android.R.color.holo_orange_light)
-            );
+            holder.txtStockQty.setTextColor(holder.itemView.getResources().getColor(android.R.color.holo_orange_light));
 
-        }else{
+        } else {
 
-            holder.txtStockQty.setTextColor(
-                    holder.itemView.getResources()
-                            .getColor(android.R.color.holo_green_dark)
-            );
+            holder.txtStockQty.setTextColor(holder.itemView.getResources().getColor(android.R.color.holo_green_dark));
         }
 
     }
@@ -85,7 +73,6 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
     }
 
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
 
@@ -97,12 +84,10 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
             super(itemView);
 
 
-            txtProductName =
-                    itemView.findViewById(R.id.txtProductName);
+            txtProductName = itemView.findViewById(R.id.txtProductName);
 
 
-            txtStockQty =
-                    itemView.findViewById(R.id.txtStockQty);
+            txtStockQty = itemView.findViewById(R.id.txtStockQty);
 
         }
     }

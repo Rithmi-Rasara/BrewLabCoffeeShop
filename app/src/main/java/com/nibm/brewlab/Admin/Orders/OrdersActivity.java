@@ -52,54 +52,52 @@ public class OrdersActivity extends AppCompatActivity {
 
     private void loadOrders(String filter) {
 
-        db.collection("Orders")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("Orders").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    orderList.clear();
+            orderList.clear();
 
-                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
 
-                        Order order = new Order();
+                Order order = new Order();
 
-                        order.setId(doc.getId());
-                        order.setUserId(doc.getString("userId"));
-                        order.setDeliveryAddress(doc.getString("address"));
-                        order.setPaymentMethod(doc.getString("payment"));
-                        order.setOrderStatus(doc.getString("status"));
+                order.setId(doc.getId());
+                order.setUserId(doc.getString("userId"));
+                order.setDeliveryAddress(doc.getString("address"));
+                order.setPaymentMethod(doc.getString("payment"));
+                order.setOrderStatus(doc.getString("status"));
 
-                        Number total = doc.getDouble("total");
-                        if (total == null) {
-                            total = doc.getLong("total");
-                        }
+                Number total = doc.getDouble("total");
+                if (total == null) {
+                    total = doc.getLong("total");
+                }
 
-                        if (total != null) {
-                            order.setTotalAmount(total.doubleValue());
-                        }
+                if (total != null) {
+                    order.setTotalAmount(total.doubleValue());
+                }
 
-                        order.setCustomerName(doc.getString("userId"));
+                order.setCustomerName(doc.getString("userId"));
 
-                        String status = order.getOrderStatus();
+                String status = order.getOrderStatus();
 
-                        if ("ALL".equals(filter)) {
+                if ("ALL".equals(filter)) {
 
-                            orderList.add(order);
+                    orderList.add(order);
 
-                        } else if ("Pending".equals(filter)) {
+                } else if ("Pending".equals(filter)) {
 
-                            if (status != null && status.equalsIgnoreCase("pending")) {
-                                orderList.add(order);
-                            }
-
-                        } else if ("Delivered".equals(filter)) {
-
-                            if (status != null && status.equalsIgnoreCase("Delivered")) {
-                                orderList.add(order);
-                            }
-                        }
+                    if (status != null && status.equalsIgnoreCase("pending")) {
+                        orderList.add(order);
                     }
 
-                    ordersAdapter.notifyDataSetChanged();
-                });
+                } else if ("Delivered".equals(filter)) {
+
+                    if (status != null && status.equalsIgnoreCase("Delivered")) {
+                        orderList.add(order);
+                    }
+                }
+            }
+
+            ordersAdapter.notifyDataSetChanged();
+        });
     }
 }

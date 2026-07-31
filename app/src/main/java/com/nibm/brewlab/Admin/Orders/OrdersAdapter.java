@@ -29,8 +29,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_order, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order, parent, false);
 
         return new ViewHolder(view);
     }
@@ -74,10 +73,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            FirebaseFirestore.getInstance()
-                    .collection("Orders")
-                    .document(order.getId())
-                    .delete();
+            FirebaseFirestore.getInstance().collection("Orders").document(order.getId()).delete();
         });
     }
 

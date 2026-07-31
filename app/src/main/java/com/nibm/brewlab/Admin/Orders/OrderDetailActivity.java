@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.FieldValue;
+
 import java.util.HashMap;
 
 import android.widget.Spinner;
@@ -43,17 +44,13 @@ public class OrderDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         spDeliveryPerson = findViewById(R.id.spDeliveryPerson);
 
-        adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_dropdown_item,
-                deliveryList
-        );
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, deliveryList);
 
         spDeliveryPerson.setAdapter(adapter);
 
@@ -76,34 +73,24 @@ public class OrderDetailActivity extends AppCompatActivity {
             return;
         }
 
-        String customer =
-                getIntent().getStringExtra("customer");
+        String customer = getIntent().getStringExtra("customer");
 
         double total = getIntent().getDoubleExtra("total", 0);
 
         txtTotal.setText("Total : Rs. " + total);
 
-        String address =
-                getIntent().getStringExtra("address");
+        String address = getIntent().getStringExtra("address");
 
-        txtCustomer.setText(
-                "Customer : " + customer
-        );
+        txtCustomer.setText("Customer : " + customer);
 
-        txtTotal.setText(
-                "Total : Rs " + total
-        );
+        txtTotal.setText("Total : Rs " + total);
 
-        txtAddress.setText(
-                "Address : " + address
-        );
+        txtAddress.setText("Address : " + address);
 
         btnAssign.setOnClickListener(v -> {
 
             if (deliveryIds.isEmpty()) {
-                Toast.makeText(this,
-                        "No delivery person available",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No delivery person available", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -116,63 +103,45 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         });
 
-        btnBack.setOnClickListener(v ->
-                finish()
-        );
+        btnBack.setOnClickListener(v -> finish());
 
     }
 
     private void loadDeliveryPersons() {
 
-        FirebaseFirestore.getInstance()
-                .collection("Users")
-                .whereEqualTo("role","Delivery Person")
-                .whereEqualTo("status","Approved")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        FirebaseFirestore.getInstance().collection("Users").whereEqualTo("role", "Delivery Person").whereEqualTo("status", "Approved").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    deliveryList.clear();
-                    deliveryIds.clear();
+            deliveryList.clear();
+            deliveryIds.clear();
 
-                    for(DocumentSnapshot doc : queryDocumentSnapshots){
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
 
-                        deliveryList.add(doc.getString("name"));
-                        deliveryIds.add(doc.getId());
+                deliveryList.add(doc.getString("name"));
+                deliveryIds.add(doc.getId());
 
-                    }
+            }
 
-                    adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
-                });
+        });
 
     }
 
-    private void showDeliveryDialog(){
+    private void showDeliveryDialog() {
 
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Select Delivery Person");
 
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(
-                        this,
-                        android.R.layout.simple_list_item_single_choice,
-                        deliveryNames
-                );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, deliveryNames);
 
-        builder.setAdapter(adapter,(dialog,which)->{
+        builder.setAdapter(adapter, (dialog, which) -> {
 
-            String selectedName =
-                    deliveryNames.get(which);
+            String selectedName = deliveryNames.get(which);
 
-            String selectedId =
-                    deliveryIds.get(which);
+            String selectedId = deliveryIds.get(which);
 
-            assignDelivery(
-                    selectedId,
-                    selectedName
-            );
+            assignDelivery(selectedId, selectedName);
 
         });
 
@@ -182,23 +151,11 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void assignDelivery(String deliveryId, String deliveryName) {
 
-        FirebaseFirestore.getInstance()
-                .collection("Orders")
-                .document(orderId)
-                .update(
-                        "deliveryPersonId", deliveryId,
-                        "deliveryPersonName", deliveryName,
-                        "status", "Preparing"
-                )
-                .addOnSuccessListener(unused -> {
+        FirebaseFirestore.getInstance().collection("Orders").document(orderId).update("deliveryPersonId", deliveryId, "deliveryPersonName", deliveryName, "status", "Preparing").addOnSuccessListener(unused -> {
 
-                    sendNotification(deliveryId);
+            sendNotification(deliveryId);
 
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
     }
 
@@ -216,21 +173,13 @@ public class OrderDetailActivity extends AppCompatActivity {
         notification.put("type", "Delivery");
         notification.put("time", com.google.firebase.firestore.FieldValue.serverTimestamp());
 
-        db.collection("Notifications")
-                .add(notification)
-                .addOnSuccessListener(documentReference -> {
+        db.collection("Notifications").add(notification).addOnSuccessListener(documentReference -> {
 
-                    Toast.makeText(this,
-                            "Delivery Assigned Successfully",
-                            Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Delivery Assigned Successfully", Toast.LENGTH_SHORT).show();
 
-                    finish();
+            finish();
 
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
     }
 

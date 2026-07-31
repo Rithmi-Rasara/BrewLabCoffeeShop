@@ -6,10 +6,11 @@ public class InventoryItem {
     private String name;
     private int quantity;
 
-    public InventoryItem(){
+    public InventoryItem() {
 
     }
-    public InventoryItem(String id, String name, int quantity){
+
+    public InventoryItem(String id, String name, int quantity) {
 
         this.id = id;
         this.name = name;
@@ -17,37 +18,39 @@ public class InventoryItem {
 
     }
 
-    public String getId(){
+    public String getId() {
 
         return id;
 
     }
 
-    public String getName(){
+    public String getName() {
 
         return name;
 
     }
-    public int getQuantity(){
+
+    public int getQuantity() {
 
         return quantity;
 
     }
 
-    public void setId(String id){
+    public void setId(String id) {
 
-        this.id=id;
+        this.id = id;
+
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
 
     }
 
-    public void setName(String name){
+    public void setQuantity(int quantity) {
 
-        this.name=name;
-
-    }
-    public void setQuantity(int quantity){
-
-        this.quantity=quantity;
+        this.quantity = quantity;
 
     }
 }

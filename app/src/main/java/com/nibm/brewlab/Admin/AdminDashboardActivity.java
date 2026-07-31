@@ -121,56 +121,42 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void loadProductsCount() {
 
-        FirebaseFirestore.getInstance()
-                .collection("Products")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots ->
+        FirebaseFirestore.getInstance().collection("Products").get().addOnSuccessListener(queryDocumentSnapshots ->
 
-                        txtProductsCount.setText(
-                                String.valueOf(queryDocumentSnapshots.size())
-                        )
-                );
+                txtProductsCount.setText(String.valueOf(queryDocumentSnapshots.size())));
 
     }
 
     private void loadOrdersCount() {
 
-        FirebaseFirestore.getInstance()
-                .collection("Orders")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots ->
+        FirebaseFirestore.getInstance().collection("Orders").get().addOnSuccessListener(queryDocumentSnapshots ->
 
-                        txtOrdersCount.setText(
-                                String.valueOf(queryDocumentSnapshots.size())
-                        )
-                );
+                txtOrdersCount.setText(String.valueOf(queryDocumentSnapshots.size())));
 
     }
 
     private void loadLowStockCount() {
 
-        FirebaseFirestore.getInstance()
-                .collection("Inventory")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        FirebaseFirestore.getInstance().collection("Inventory").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    int low = 0;
+            int low = 0;
 
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
 
-                        Long qty = doc.getLong("quantity");
+                Long qty = doc.getLong("quantity");
 
-                        if (qty != null && qty <= 10) {
-                            low++;
-                        }
+                if (qty != null && qty <= 10) {
+                    low++;
+                }
 
-                    }
+            }
 
-                    txtLowStock.setText(String.valueOf(low));
+            txtLowStock.setText(String.valueOf(low));
 
-                });
+        });
 
     }
+
     private void setupAdapters() {
 
         lowStockAdapter = new LowStockAdapter(lowStockList);
@@ -181,67 +167,62 @@ public class AdminDashboardActivity extends AppCompatActivity {
         recyclerFeedback.setAdapter(feedbackAdapter);
     }
 
-    private void loadLowStock(){
+    private void loadLowStock() {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("Inventory")
-                .addSnapshotListener((value,error)->{
+        db.collection("Inventory").addSnapshotListener((value, error) -> {
 
-                    if(error != null || value == null){
-                        return;
-                    }
+            if (error != null || value == null) {
+                return;
+            }
 
-                    lowStockList.clear();
+            lowStockList.clear();
 
 
-                    for(DocumentSnapshot doc:value){
+            for (DocumentSnapshot doc : value) {
 
-                        String name = doc.getString("name");
+                String name = doc.getString("name");
 
-                        Long qty = doc.getLong("quantity");
+                Long qty = doc.getLong("quantity");
 
-                        if(qty != null && qty <= 10){
+                if (qty != null && qty <= 10) {
 
-                            Inventory item = new Inventory();
+                    Inventory item = new Inventory();
 
-                            item.setId(doc.getId());
-                            item.setName(name);
-                            item.setQuantity(qty.intValue());
+                    item.setId(doc.getId());
+                    item.setName(name);
+                    item.setQuantity(qty.intValue());
 
-                            lowStockList.add(item);
-                        }
-                    }
+                    lowStockList.add(item);
+                }
+            }
 
-                    lowStockAdapter.notifyDataSetChanged();
+            lowStockAdapter.notifyDataSetChanged();
 
-                });
+        });
     }
 
     private void loadFeedback() {
 
-        FirebaseFirestore.getInstance()
-                .collection("Feedback")
-                .limit(10)
-                .addSnapshotListener((value, error) -> {
+        FirebaseFirestore.getInstance().collection("Feedback").limit(10).addSnapshotListener((value, error) -> {
 
-                    if (error != null || value == null)
-                        return;
+            if (error != null || value == null) return;
 
-                    feedbackList.clear();
+            feedbackList.clear();
 
-                    for (DocumentSnapshot doc : value.getDocuments()) {
+            for (DocumentSnapshot doc : value.getDocuments()) {
 
-                        Feedback feedback = doc.toObject(Feedback.class);
+                Feedback feedback = doc.toObject(Feedback.class);
 
-                        if (feedback != null) {
-                            feedback.setId(doc.getId());
-                            feedbackList.add(feedback);
-                        }
-                    }
+                if (feedback != null) {
+                    feedback.setId(doc.getId());
+                    feedbackList.add(feedback);
+                }
+            }
 
-                    feedbackAdapter.notifyDataSetChanged();
-                });
+            feedbackAdapter.notifyDataSetChanged();
+        });
     }
 
     private void loadAdminName() {
@@ -251,95 +232,58 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return;
         }
 
-        String uid = FirebaseAuth.getInstance()
-                .getCurrentUser()
-                .getUid();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        userRef = FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(uid);
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
 
-        userRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                    @Override
-                    public void onDataChange(
-                            @NonNull DataSnapshot snapshot) {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        String name =
-                                snapshot.child("name")
-                                        .getValue(String.class);
+                String name = snapshot.child("name").getValue(String.class);
 
-                        txtAdminName.setText(
-                                (name != null && !name.isEmpty())
-                                        ? name
-                                        : "Administrator"
-                        );
-                    }
+                txtAdminName.setText((name != null && !name.isEmpty()) ? name : "Administrator");
+            }
 
-                    @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-                        txtAdminName.setText("Administrator");
-                    }
-                });
+                txtAdminName.setText("Administrator");
+            }
+        });
     }
 
     private void setupClicks() {
 
-        addProduct.setOnClickListener(v ->
-                startActivity(new Intent(
-                        this,
-                        ManageProductsActivity.class)));
+        addProduct.setOnClickListener(v -> startActivity(new Intent(this, ManageProductsActivity.class)));
 
-        manageOrders.setOnClickListener(v ->
-                startActivity(new Intent(
-                        this,
-                        OrdersActivity.class)));
+        manageOrders.setOnClickListener(v -> startActivity(new Intent(this, OrdersActivity.class)));
 
-        manageCategories.setOnClickListener(v ->
-                startActivity(new Intent(
-                        this,
-                        CategoryActivity.class)));
+        manageCategories.setOnClickListener(v -> startActivity(new Intent(this, CategoryActivity.class)));
 
-        viewCustomers.setOnClickListener(v ->
-                startActivity(new Intent(
-                        this,
-                        CustomersActivity.class)));
+        viewCustomers.setOnClickListener(v -> startActivity(new Intent(this, CustomersActivity.class)));
 
-        manageDelivery.setOnClickListener(v ->
-                startActivity(new Intent(
-                        this,
-                        ManageDeliveryActivity.class)));
+        manageDelivery.setOnClickListener(v -> startActivity(new Intent(this, ManageDeliveryActivity.class)));
 
-        manageInventory.setOnClickListener(v ->
-                startActivity(new Intent(
-                        AdminDashboardActivity.this,
-                        InventoryActivity.class)));
+        manageInventory.setOnClickListener(v -> startActivity(new Intent(AdminDashboardActivity.this, InventoryActivity.class)));
 
         cardManageLoyalty.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this,
-                    ManageLoyaltyActivity.class);
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageLoyaltyActivity.class);
             startActivity(intent);
         });
 
         imgLogout.setOnClickListener(v -> {
 
-            new androidx.appcompat.app.AlertDialog.Builder(AdminDashboardActivity.this)
-                    .setTitle("Logout")
-                    .setMessage("Are you sure you want to logout?")
-                    .setCancelable(false)
+            new androidx.appcompat.app.AlertDialog.Builder(AdminDashboardActivity.this).setTitle("Logout").setMessage("Are you sure you want to logout?").setCancelable(false)
 
                     .setPositiveButton("Logout", (dialog, which) -> {
 
                         FirebaseAuth.getInstance().signOut();
 
-                        Intent intent = new Intent(AdminDashboardActivity.this,
-                                LoginActivity.class);
+                        Intent intent = new Intent(AdminDashboardActivity.this, LoginActivity.class);
 
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                         startActivity(intent);
                         finish();

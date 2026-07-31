@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+
 import com.nibm.brewlab.Admin.Inventory.AddInventoryActivity;
 
 import androidx.appcompat.app.AlertDialog;
@@ -25,9 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
-public class InventoryAdapter
-        extends RecyclerView.Adapter<InventoryAdapter.ViewHolder>
-        implements Filterable {
+public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.ViewHolder> implements Filterable {
 
     private List<Inventory> list;
     private ArrayList<Inventory> fullList;
@@ -49,12 +48,9 @@ public class InventoryAdapter
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(
-            @NonNull ViewGroup parent,
-            int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_inventory, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_inventory, parent, false);
 
         return new ViewHolder(view);
     }
@@ -85,9 +81,7 @@ public class InventoryAdapter
 
         holder.btnUpdate.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    holder.itemView.getContext(),
-                    AddInventoryActivity.class);
+            Intent intent = new Intent(holder.itemView.getContext(), AddInventoryActivity.class);
 
             intent.putExtra("id", item.getId());
             intent.putExtra("name", item.getName());
@@ -99,44 +93,27 @@ public class InventoryAdapter
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            new AlertDialog.Builder(holder.itemView.getContext())
-                    .setTitle("Delete Inventory")
-                    .setMessage("Delete " + item.getName() + " ?")
-                    .setPositiveButton("Delete", (dialog, which) -> {
+            new AlertDialog.Builder(holder.itemView.getContext()).setTitle("Delete Inventory").setMessage("Delete " + item.getName() + " ?").setPositiveButton("Delete", (dialog, which) -> {
 
-                        db.collection("Inventory")
-                                .document(item.getId())
-                                .delete()
-                                .addOnSuccessListener(unused -> {
+                db.collection("Inventory").document(item.getId()).delete().addOnSuccessListener(unused -> {
 
-                                    int currentPosition = holder.getAdapterPosition();
+                    int currentPosition = holder.getAdapterPosition();
 
-                                    if (currentPosition != RecyclerView.NO_POSITION) {
+                    if (currentPosition != RecyclerView.NO_POSITION) {
 
-                                        list.remove(currentPosition);
+                        list.remove(currentPosition);
 
-                                        notifyItemRemoved(currentPosition);
+                        notifyItemRemoved(currentPosition);
 
-                                    }
+                    }
 
-                                    Toast.makeText(
-                                            holder.itemView.getContext(),
-                                            "Deleted Successfully",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
+                    Toast.makeText(holder.itemView.getContext(), "Deleted Successfully", Toast.LENGTH_SHORT).show();
 
-                                })
-                                .addOnFailureListener(e ->
+                }).addOnFailureListener(e ->
 
-                                        Toast.makeText(
-                                                holder.itemView.getContext(),
-                                                e.getMessage(),
-                                                Toast.LENGTH_SHORT
-                                        ).show());
+                        Toast.makeText(holder.itemView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
 
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+            }).setNegativeButton("Cancel", null).show();
 
         });
 
@@ -161,14 +138,11 @@ public class InventoryAdapter
 
             } else {
 
-                String text = constraint.toString()
-                        .toLowerCase()
-                        .trim();
+                String text = constraint.toString().toLowerCase().trim();
 
                 for (Inventory item : fullList) {
 
-                    if (item.getName().toLowerCase().contains(text)
-                            || String.valueOf(item.getQuantity()).contains(text)) {
+                    if (item.getName().toLowerCase().contains(text) || String.valueOf(item.getQuantity()).contains(text)) {
 
                         filteredList.add(item);
                     }
@@ -180,10 +154,10 @@ public class InventoryAdapter
 
             return results;
         }
+
         @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+        protected void publishResults(CharSequence constraint, FilterResults results) {
 
             list.clear();
 
@@ -194,7 +168,8 @@ public class InventoryAdapter
             notifyDataSetChanged();
         }
     };
-    public void updateFullList(){
+
+    public void updateFullList() {
 
         fullList.clear();
 
@@ -220,26 +195,14 @@ public class InventoryAdapter
 
             super(itemView);
 
-            tvName = itemView.findViewById(
-                    R.id.tvItemName
-            );
+            tvName = itemView.findViewById(R.id.tvItemName);
 
-            tvQty = itemView.findViewById(
-                    R.id.tvItemQty
-            );
+            tvQty = itemView.findViewById(R.id.tvItemQty);
 
-            tvStockStatus = itemView.findViewById(
-                    R.id.tvStockStatus
-            );
+            tvStockStatus = itemView.findViewById(R.id.tvStockStatus);
 
-            btnUpdate =
-                    itemView.findViewById(
-                            R.id.btnUpdate
-                    );
-            btnDelete =
-                    itemView.findViewById(
-                            R.id.btnDelete
-                    );
+            btnUpdate = itemView.findViewById(R.id.btnUpdate);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

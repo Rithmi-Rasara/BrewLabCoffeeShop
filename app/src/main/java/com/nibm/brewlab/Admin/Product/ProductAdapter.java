@@ -11,7 +11,9 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
+
 import android.app.AlertDialog;
 
 import androidx.annotation.NonNull;
@@ -22,8 +24,7 @@ import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder>
-        implements Filterable {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> implements Filterable {
 
     Context context;
     ArrayList<Product> productList;
@@ -44,8 +45,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.product_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.product_item, parent, false);
 
         return new ViewHolder(view);
     }
@@ -63,38 +63,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         if (image != null && !image.isEmpty()) {
 
-            Glide.with(context)
-                    .load(image)
-                    .placeholder(R.drawable.cappuccino)
-                    .error(R.drawable.cappuccino)
-                    .into(holder.productImage);
+            Glide.with(context).load(image).placeholder(R.drawable.cappuccino).error(R.drawable.cappuccino).into(holder.productImage);
 
         } else {
 
-            Glide.with(context)
-                    .load(R.drawable.cappuccino)
-                    .into(holder.productImage);
+            Glide.with(context).load(R.drawable.cappuccino).into(holder.productImage);
         }
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            new AlertDialog.Builder(context)
-                    .setTitle("Delete Product")
-                    .setMessage("Are you sure you want to delete this product?")
-                    .setPositiveButton("Delete", (dialog, which) -> {
+            new AlertDialog.Builder(context).setTitle("Delete Product").setMessage("Are you sure you want to delete this product?").setPositiveButton("Delete", (dialog, which) -> {
 
-                        db.collection("Products")
-                                .document(product.getId())
-                                .delete()
-                                .addOnSuccessListener(unused ->
-                                        Toast.makeText(context,
-                                                "Deleted Successfully",
-                                                Toast.LENGTH_SHORT).show()
-                                );
+                db.collection("Products").document(product.getId()).delete().addOnSuccessListener(unused -> Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_SHORT).show());
 
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
+            }).setNegativeButton("Cancel", null).show();
 
         });
 
@@ -171,8 +153,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
                 for (Product p : productListFull) {
 
-                    if (p.getName().toLowerCase().contains(text)
-                            || p.getCategory().toLowerCase().contains(text)) {
+                    if (p.getName().toLowerCase().contains(text) || p.getCategory().toLowerCase().contains(text)) {
 
                         filtered.add(p);
                     }
@@ -186,8 +167,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
 
         @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+        protected void publishResults(CharSequence constraint, FilterResults results) {
 
             productList.clear();
             productList.addAll((ArrayList<Product>) results.values);

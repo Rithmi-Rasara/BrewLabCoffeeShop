@@ -17,7 +17,7 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
 
     private ArrayList<Inventory> inventoryList;
 
-    public LowStockAdapter(ArrayList<Inventory> inventoryList){
+    public LowStockAdapter(ArrayList<Inventory> inventoryList) {
         this.inventoryList = inventoryList;
     }
 
@@ -26,8 +26,7 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.low_stock_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.low_stock_item, parent, false);
 
         return new ViewHolder(view);
     }
@@ -40,9 +39,7 @@ public class LowStockAdapter extends RecyclerView.Adapter<LowStockAdapter.ViewHo
 
         holder.name.setText(item.getName());
 
-        holder.stock.setText(
-                "Stock : " + item.getQuantity()
-        );
+        holder.stock.setText("Stock : " + item.getQuantity());
 
     }
 

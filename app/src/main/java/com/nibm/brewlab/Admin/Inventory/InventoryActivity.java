@@ -36,9 +36,7 @@ public class InventoryActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerInventory);
 
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         list = new ArrayList<>();
 
@@ -52,19 +50,11 @@ public class InventoryActivity extends AppCompatActivity {
         searchInventory.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void beforeTextChanged(
-                    CharSequence s,
-                    int start,
-                    int count,
-                    int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
-            public void onTextChanged(
-                    CharSequence s,
-                    int start,
-                    int before,
-                    int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 adapter.getFilter().filter(s);
             }
@@ -76,15 +66,11 @@ public class InventoryActivity extends AppCompatActivity {
 
         loadInventory();
 
-        FloatingActionButton btnAddInventory =
-                findViewById(R.id.btnAddInventory);
+        FloatingActionButton btnAddInventory = findViewById(R.id.btnAddInventory);
 
         btnAddInventory.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    InventoryActivity.this,
-                    AddInventoryActivity.class
-            );
+            Intent intent = new Intent(InventoryActivity.this, AddInventoryActivity.class);
 
             startActivity(intent);
         });
@@ -92,60 +78,49 @@ public class InventoryActivity extends AppCompatActivity {
 
     private void loadInventory() {
 
-        db.collection("Inventory")
-                .addSnapshotListener((value, error) -> {
+        db.collection("Inventory").addSnapshotListener((value, error) -> {
 
-                    if (error != null || value == null) {
-                        return;
+            if (error != null || value == null) {
+                return;
+            }
+
+            list.clear();
+
+            for (DocumentSnapshot doc : value.getDocuments()) {
+
+                String name = doc.getString("name");
+
+                Object qtyObject = doc.get("quantity");
+
+                int quantity = 0;
+
+                if (qtyObject instanceof Long) {
+
+                    quantity = ((Long) qtyObject).intValue();
+
+                } else if (qtyObject instanceof Double) {
+
+                    quantity = ((Double) qtyObject).intValue();
+
+                } else if (qtyObject instanceof String) {
+
+                    try {
+
+                        quantity = Integer.parseInt(qtyObject.toString());
+
+                    } catch (Exception e) {
+
+                        quantity = 0;
                     }
+                }
 
-                    list.clear();
+                Inventory item = new Inventory(doc.getId(), name, quantity);
 
-                    for (DocumentSnapshot doc : value.getDocuments()) {
+                list.add(item);
+            }
 
-                        String name = doc.getString("name");
-
-                        Object qtyObject = doc.get("quantity");
-
-                        int quantity = 0;
-
-                        if (qtyObject instanceof Long) {
-
-                            quantity =
-                                    ((Long) qtyObject).intValue();
-
-                        } else if (qtyObject instanceof Double) {
-
-                            quantity =
-                                    ((Double) qtyObject).intValue();
-
-                        } else if (qtyObject instanceof String) {
-
-                            try {
-
-                                quantity =
-                                        Integer.parseInt(
-                                                qtyObject.toString()
-                                        );
-
-                            } catch (Exception e) {
-
-                                quantity = 0;
-                            }
-                        }
-
-                        Inventory item =
-                                new Inventory(
-                                        doc.getId(),
-                                        name,
-                                        quantity
-                                );
-
-                        list.add(item);
-                    }
-
-                    adapter.updateFullList();
-                    adapter.notifyDataSetChanged();
-                });
+            adapter.updateFullList();
+            adapter.notifyDataSetChanged();
+        });
     }
 }
