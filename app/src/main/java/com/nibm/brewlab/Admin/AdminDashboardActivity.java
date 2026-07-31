@@ -20,13 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nibm.brewlab.LoginActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import com.google.firebase.Timestamp;
-import java.util.Calendar;
-
 import com.nibm.brewlab.Admin.Feedback.Feedback;
 import com.nibm.brewlab.Admin.Feedback.FeedbackAdapter;
 
@@ -38,7 +31,6 @@ import com.nibm.brewlab.Admin.Loyalty.ManageLoyaltyActivity;
 import com.nibm.brewlab.Admin.Orders.Order;
 import com.nibm.brewlab.Admin.Orders.OrdersActivity;
 import com.nibm.brewlab.Admin.Orders.OrdersAdapter;
-import com.nibm.brewlab.Admin.Product.AddProductActivity;
 import com.nibm.brewlab.Admin.Product.ManageProductsActivity;
 import com.nibm.brewlab.Admin.Inventory.Inventory;
 import com.nibm.brewlab.R;
@@ -73,8 +65,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
     private TextView txtProductsCount;
     private TextView txtOrdersCount;
     private TextView txtLowStock;
-    private TextView txtTodayRevenue;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +79,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         setupAdapters();
 
         loadAdminName();
-        loadRecentOrders();
         loadLowStock();
 
         setupClicks();
@@ -97,7 +86,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         loadProductsCount();
         loadOrdersCount();
         loadLowStockCount();
-        calculateTodayRevenue();
 
         loadFeedback();
     }
@@ -110,7 +98,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         imgLogout = findViewById(R.id.imgLogout);
 
-        recyclerOrders = findViewById(R.id.recyclerOrders);
         recyclerStock = findViewById(R.id.recyclerStock);
         recyclerFeedback = findViewById(R.id.recyclerFeedback);
 
@@ -124,14 +111,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
         txtProductsCount = findViewById(R.id.txtProductsCount);
         txtOrdersCount = findViewById(R.id.txtOrdersCount);
         txtLowStock = findViewById(R.id.txtLowStock);
-        txtTodayRevenue = findViewById(R.id.txtTodayRevenue);
         feedbackList = new ArrayList<>();
 
-        recyclerOrders.setLayoutManager(new LinearLayoutManager(this));
         recyclerStock.setLayoutManager(new LinearLayoutManager(this));
         recyclerFeedback.setLayoutManager(new LinearLayoutManager(this));
 
-        orderList = new ArrayList<>();
         lowStockList = new ArrayList<>();
     }
 
@@ -187,92 +171,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 });
 
     }
-
-    private void calculateTodayRevenue(){
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        String today = new SimpleDateFormat(
-                "yyyy-MM-dd",
-                Locale.getDefault()
-        ).format(new Date());
-
-
-        db.collection("orders")
-                .whereEqualTo("date", today)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-
-
-                    double total = 0;
-
-
-                    for(DocumentSnapshot document : queryDocumentSnapshots){
-
-                        Double amount =
-                                document.getDouble("totalAmount");
-
-
-                        if(amount != null){
-                            total += amount;
-                        }
-
-                    }
-
-
-                    txtTodayRevenue.setText(
-                            "Rs. " + String.format("%.2f", total)
-                    );
-
-
-                })
-                .addOnFailureListener(e -> {
-
-                    txtTodayRevenue.setText("Rs. 0");
-
-                });
-
-    }
     private void setupAdapters() {
 
-        ordersAdapter = new OrdersAdapter(orderList);
         lowStockAdapter = new LowStockAdapter(lowStockList);
 
-        recyclerOrders.setAdapter(ordersAdapter);
         recyclerStock.setAdapter(lowStockAdapter);
 
         feedbackAdapter = new FeedbackAdapter(feedbackList);
         recyclerFeedback.setAdapter(feedbackAdapter);
-    }
-
-    private void loadRecentOrders() {
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("Orders")
-                .limit(10)
-                .addSnapshotListener((value, error) -> {
-
-                    if(error != null || value == null){
-                        return;
-                    }
-
-                    orderList.clear();
-
-                    for(DocumentSnapshot doc : value.getDocuments()){
-
-                        Order order = doc.toObject(Order.class);
-
-                        if(order != null){
-
-                            order.setId(doc.getId());
-
-                            orderList.add(order);
-                        }
-                    }
-
-                    ordersAdapter.notifyDataSetChanged();
-                });
     }
 
     private void loadLowStock(){

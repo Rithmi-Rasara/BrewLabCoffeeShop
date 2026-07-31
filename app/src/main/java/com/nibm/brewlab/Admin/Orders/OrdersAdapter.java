@@ -62,7 +62,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
             Intent intent = new Intent(v.getContext(), OrderDetailActivity.class);
 
-            intent.putExtra("orderId", order.getId());   // <-- මේක අනිවාර්යයි
+            intent.putExtra("orderId", order.getId());
             intent.putExtra("customer", order.getCustomerName());
             intent.putExtra("total", order.getTotalAmount());
             intent.putExtra("address", order.getDeliveryAddress());
