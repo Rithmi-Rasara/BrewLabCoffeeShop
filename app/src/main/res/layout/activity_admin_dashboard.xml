@@ -165,17 +165,17 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Stock"
-                        android:textColor="#FFFFFF"/>
-
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/ic_warning"
                         android:tint="#FF9800" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stock"
+                        android:textColor="#FFFFFF"/>
 
                     <TextView
                         android:id="@+id/txtLowStock"
@@ -184,36 +184,6 @@
                         android:text="0"
                         android:textColor="#FF4444"
                         android:textSize="22sp"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="160dp"
-                    android:layout_height="120dp"
-                    android:layout_margin="8dp"
-                    android:background="@drawable/card_bg"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_money"
-                        android:tint="#FFD700"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Today's Revenue"
-                        android:textColor="#FFFFFF"/>
-
-                    <TextView
-                        android:id="@+id/txtTodayRevenue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rs. 0"
-                        android:textColor="#D89A5C"
-                        android:textSize="26sp"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -411,21 +381,6 @@
             </LinearLayout>
 
         </GridLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recent Orders"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="18dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerOrders"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
