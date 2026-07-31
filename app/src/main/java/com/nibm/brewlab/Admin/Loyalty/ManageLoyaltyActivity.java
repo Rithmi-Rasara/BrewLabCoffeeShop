@@ -36,16 +36,11 @@ public class ManageLoyaltyActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerLoyalty);
 
-        recyclerView.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loyaltyList = new ArrayList<>();
 
-        adapter = new LoyaltyAdapter(
-                this,
-                loyaltyList
-        );
+        adapter = new LoyaltyAdapter(this, loyaltyList);
 
         recyclerView.setAdapter(adapter);
 
@@ -55,25 +50,19 @@ public class ManageLoyaltyActivity extends AppCompatActivity {
 
     }
 
-    private void loadLoyaltyCustomers(){
+    private void loadLoyaltyCustomers() {
 
-        db.collection("Loyalty")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+        db.collection("Loyalty").get().addOnSuccessListener(queryDocumentSnapshots -> {
 
                     loyaltyList.clear();
 
-                    for(DocumentSnapshot document :
-                            queryDocumentSnapshots){
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
 
-                        Loyalty loyalty =
-                                document.toObject(Loyalty.class);
+                        Loyalty loyalty = document.toObject(Loyalty.class);
 
-                        if(loyalty != null){
+                        if (loyalty != null) {
 
-                            loyalty.setId(
-                                    document.getId()
-                            );
+                            loyalty.setId(document.getId());
 
                             loyaltyList.add(loyalty);
 
@@ -87,11 +76,7 @@ public class ManageLoyaltyActivity extends AppCompatActivity {
 
                 .addOnFailureListener(e -> {
 
-                    Toast.makeText(
-                            this,
-                            "Failed : " + e.getMessage(),
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    Toast.makeText(this, "Failed : " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
                 });
 

@@ -35,7 +35,6 @@ public class AddProductActivity extends AppCompatActivity {
     Button btnUpdate;
 
 
-
     Uri imageUri;
     String oldImage = "";
 
@@ -78,7 +77,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if(intent.hasExtra("id")) {
+        if (intent.hasExtra("id")) {
 
             isUpdate = true;
 
@@ -104,11 +103,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         btnAdd.setOnClickListener(v -> {
 
-            Toast.makeText(
-                    AddProductActivity.this,
-                    "Updating Product...",
-                    Toast.LENGTH_SHORT
-            ).show();
+            Toast.makeText(AddProductActivity.this, "Updating Product...", Toast.LENGTH_SHORT).show();
 
             saveProduct();
 
@@ -139,42 +134,38 @@ public class AddProductActivity extends AppCompatActivity {
 
         if (imageUri != null) {
 
-            MediaManager.get().upload(imageUri)
-                    .unsigned("brewlab")
-                    .callback(new UploadCallback() {
+            MediaManager.get().upload(imageUri).unsigned("brewlab").callback(new UploadCallback() {
 
-                        @Override
-                        public void onStart(String requestId) {
-                        }
+                @Override
+                public void onStart(String requestId) {
+                }
 
-                        @Override
-                        public void onProgress(String requestId, long bytes, long totalBytes) {
-                        }
+                @Override
+                public void onProgress(String requestId, long bytes, long totalBytes) {
+                }
 
-                        @Override
-                        public void onSuccess(String requestId, Map resultData) {
+                @Override
+                public void onSuccess(String requestId, Map resultData) {
 
-                            String imageUrl = resultData.get("secure_url").toString();
+                    String imageUrl = resultData.get("secure_url").toString();
 
-                            saveToFirestore(name, price, category, desc, imageUrl);
+                    saveToFirestore(name, price, category, desc, imageUrl);
 
-                        }
+                }
 
-                        @Override
-                        public void onError(String requestId, ErrorInfo error) {
+                @Override
+                public void onError(String requestId, ErrorInfo error) {
 
-                            Toast.makeText(AddProductActivity.this,
-                                    error.getDescription(),
-                                    Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddProductActivity.this, error.getDescription(), Toast.LENGTH_SHORT).show();
 
-                        }
+                }
 
-                        @Override
-                        public void onReschedule(String requestId, ErrorInfo error) {
+                @Override
+                public void onReschedule(String requestId, ErrorInfo error) {
 
-                        }
+                }
 
-                    }).dispatch();
+            }).dispatch();
 
         } else {
 
@@ -184,60 +175,37 @@ public class AddProductActivity extends AppCompatActivity {
 
     }
 
-    private void saveToFirestore(String name,
-                                 String price,
-                                 String category,
-                                 String desc,
-                                 String imageUrl) {
+    private void saveToFirestore(String name, String price, String category, String desc, String imageUrl) {
 
-        Product product = new Product(
-                name,
-                price,
-                category,
-                desc,
-                imageUrl
-        );
+        Product product = new Product(name, price, category, desc, imageUrl);
 
         if (isUpdate) {
 
-            db.collection("Products")
-                    .document(productId)
-                    .set(product)
-                    .addOnSuccessListener(unused -> {
+            db.collection("Products").document(productId).set(product).addOnSuccessListener(unused -> {
 
-                        Toast.makeText(
-                                this,
-                                "Updated Successfully",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
 
-                        finish();
+                finish();
 
-                    });
+            });
 
         } else {
 
-            db.collection("Products")
-                    .add(product)
-                    .addOnSuccessListener(documentReference -> {
-                        Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
+            db.collection("Products").add(product).addOnSuccessListener(documentReference -> {
+                Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            });
 
         }
 
     }
 
-    private final ActivityResultLauncher<Intent> imagePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
+    private final ActivityResultLauncher<Intent> imagePicker = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 
-                        if(result.getResultCode()== Activity.RESULT_OK &&
-                                result.getData()!=null) {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
 
-                            imageUri = result.getData().getData();
-                            imgProduct.setImageURI(imageUri);
-                        }
-                    });
+            imageUri = result.getData().getData();
+            imgProduct.setImageURI(imageUri);
+        }
+    });
 }

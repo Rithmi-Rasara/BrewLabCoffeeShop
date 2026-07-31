@@ -31,7 +31,7 @@ public class CategoryProduct extends AppCompatActivity {
 
         setContentView(R.layout.activity_category_products);
 
-        if(getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
@@ -67,24 +67,24 @@ public class CategoryProduct extends AppCompatActivity {
 
     }
 
-    private void loadProducts(String category){
+    private void loadProducts(String category) {
 
         db.collection("Products")
-                .whereEqualTo("category",category)
-                .addSnapshotListener((value,error)->{
+                .whereEqualTo("category", category)
+                .addSnapshotListener((value, error) -> {
 
-                    if(error!=null || value==null){
+                    if (error != null || value == null) {
                         return;
                     }
 
                     productList.clear();
 
-                    for(DocumentSnapshot doc:value.getDocuments()){
+                    for (DocumentSnapshot doc : value.getDocuments()) {
 
                         Product product =
                                 doc.toObject(Product.class);
 
-                        if(product!=null){
+                        if (product != null) {
 
                             product.setId(
                                     doc.getId()

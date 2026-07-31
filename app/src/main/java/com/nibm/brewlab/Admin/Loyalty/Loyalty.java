@@ -9,7 +9,6 @@ public class Loyalty {
     private String level;
 
 
-
     public Loyalty() {
 
     }
@@ -72,16 +71,13 @@ public class Loyalty {
     // Auto calculate membership level
     public static String calculateLevel(int points) {
 
-        if(points >= 1000){
+        if (points >= 1000) {
             return "Platinum";
-        }
-        else if(points >= 500){
+        } else if (points >= 500) {
             return "Gold";
-        }
-        else if(points >= 100){
+        } else if (points >= 100) {
             return "Silver";
-        }
-        else{
+        } else {
             return "Bronze";
         }
     }

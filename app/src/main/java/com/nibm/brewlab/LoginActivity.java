@@ -51,8 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setOnClickListener(v -> loginUser());
 
-        txtSignup.setOnClickListener(v ->
-                startActivity(new Intent(LoginActivity.this, SignupActivity.class)));
+        txtSignup.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, SignupActivity.class)));
     }
 
     private void loginUser() {
@@ -76,132 +75,104 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setText("");
         loginLoader.setVisibility(View.VISIBLE);
 
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
+        auth.signInWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 
-                    String uid = auth.getCurrentUser().getUid();
+            String uid = auth.getCurrentUser().getUid();
 
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                    db.collection("Users")
-                            .document(uid)
-                            .get()
-                            .addOnSuccessListener(snapshot -> {
+            db.collection("Users").document(uid).get().addOnSuccessListener(snapshot -> {
 
-                                loginLoader.setVisibility(View.GONE);
-                                btnLogin.setEnabled(true);
-                                btnLogin.setText("Login");
+                loginLoader.setVisibility(View.GONE);
+                btnLogin.setEnabled(true);
+                btnLogin.setText("Login");
 
-                                if (snapshot.exists()) {
+                if (snapshot.exists()) {
 
 
-                                    String role = snapshot.getString("role");
+                    String role = snapshot.getString("role");
 
-                                    String status = snapshot.getString("status");
-
-
-
-                                    // Customer / Delivery approval check
-
-                                    if(role != null &&
-                                            (role.equalsIgnoreCase("Customer") ||
-                                                    role.equalsIgnoreCase("Delivery Person"))){
+                    String status = snapshot.getString("status");
 
 
-                                        if(status == null ||
-                                                !status.equalsIgnoreCase("Approved")){
+                    // Customer / Delivery approval check
+
+                    if (role != null && (role.equalsIgnoreCase("Customer") || role.equalsIgnoreCase("Delivery Person"))) {
 
 
-                                            FirebaseAuth.getInstance().signOut();
+                        if (status == null || !status.equalsIgnoreCase("Approved")) {
 
 
-                                            Toast.makeText(LoginActivity.this,
-                                                    "Account not approved yet",
-                                                    Toast.LENGTH_LONG).show();
-
-                                            return;
-
-                                        }
-
-                                    }
-
-                                    Toast.makeText(LoginActivity.this,
-                                            "Login Successful",
-                                            Toast.LENGTH_SHORT).show();
+                            FirebaseAuth.getInstance().signOut();
 
 
+                            Toast.makeText(LoginActivity.this, "Account not approved yet", Toast.LENGTH_LONG).show();
 
-                                    Intent intent = null;
+                            return;
 
-                                    if (role == null) {
-                                        Toast.makeText(LoginActivity.this,
-                                                "Role not found!",
-                                                Toast.LENGTH_LONG).show();
-                                        return;
-                                    }
+                        }
 
-                                    switch (role.toLowerCase()) {
+                    }
 
-                                        case "admin":
-                                            intent = new Intent(LoginActivity.this,
-                                                    AdminDashboardActivity.class);
-                                            break;
+                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
 
-                                        case "customer":
-                                            intent = new Intent(LoginActivity.this,
-                                                    CustomerDashboardActivity.class);
-                                            break;
+                    Intent intent = null;
+
+                    if (role == null) {
+                        Toast.makeText(LoginActivity.this, "Role not found!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    switch (role.toLowerCase()) {
+
+                        case "admin":
+                            intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                            break;
 
 
-                                        case "delivery person":
-                                        case "delivery":
-                                            intent = new Intent(LoginActivity.this,
-                                                    DeliveryDashboardActivity.class);
-                                            break;
+                        case "customer":
+                            intent = new Intent(LoginActivity.this, CustomerDashboardActivity.class);
+                            break;
 
-                                        default:
-                                            Toast.makeText(LoginActivity.this,
-                                                    "Invalid role: " + role,
-                                                    Toast.LENGTH_LONG).show();
-                                            return;
-                                    }
 
-                                    startActivity(intent);
-                                    finish();
+                        case "delivery person":
+                        case "delivery":
+                            intent = new Intent(LoginActivity.this, DeliveryDashboardActivity.class);
+                            break;
 
-                                } else {
-                                    Toast.makeText(LoginActivity.this,
-                                            "User data not found",
-                                            Toast.LENGTH_LONG).show();
-                                }
+                        default:
+                            Toast.makeText(LoginActivity.this, "Invalid role: " + role, Toast.LENGTH_LONG).show();
+                            return;
+                    }
 
-                            })
-                            .addOnFailureListener(e -> {
+                    startActivity(intent);
+                    finish();
 
-                                loginLoader.setVisibility(View.GONE);
-                                btnLogin.setEnabled(true);
-                                btnLogin.setText("Login");
+                } else {
+                    Toast.makeText(LoginActivity.this, "User data not found", Toast.LENGTH_LONG).show();
+                }
 
-                                Log.e("DATABASE_ERROR", e.getMessage(), e);
+            }).addOnFailureListener(e -> {
 
-                                Toast.makeText(LoginActivity.this,
-                                        "Database error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                            });
+                loginLoader.setVisibility(View.GONE);
+                btnLogin.setEnabled(true);
+                btnLogin.setText("Login");
 
-                })
-                .addOnFailureListener(e -> {
+                Log.e("DATABASE_ERROR", e.getMessage(), e);
 
-                    loginLoader.setVisibility(View.GONE);
-                    btnLogin.setEnabled(true);
-                    btnLogin.setText("Login");
+                Toast.makeText(LoginActivity.this, "Database error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            });
 
-                    Log.e("LOGIN_ERROR", e.getMessage(), e);
+        }).addOnFailureListener(e -> {
 
-                    Toast.makeText(LoginActivity.this,
-                            "Login failed: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                });
+            loginLoader.setVisibility(View.GONE);
+            btnLogin.setEnabled(true);
+            btnLogin.setText("Login");
+
+            Log.e("LOGIN_ERROR", e.getMessage(), e);
+
+            Toast.makeText(LoginActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        });
     }
 }

@@ -12,7 +12,7 @@ public class DeliveryPerson {
     public String status;
 
 
-    public DeliveryPerson(){
+    public DeliveryPerson() {
 
     }
 

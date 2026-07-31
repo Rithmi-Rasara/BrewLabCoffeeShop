@@ -17,7 +17,7 @@ import com.nibm.brewlab.R;
 import java.util.ArrayList;
 
 public class DeliveryPersonAdapter
-        extends RecyclerView.Adapter<DeliveryPersonAdapter.ViewHolder>{
+        extends RecyclerView.Adapter<DeliveryPersonAdapter.ViewHolder> {
 
     Context context;
 
@@ -26,7 +26,7 @@ public class DeliveryPersonAdapter
     FirebaseFirestore db;
 
     public DeliveryPersonAdapter(Context context,
-                                 ArrayList<DeliveryPerson> list){
+                                 ArrayList<DeliveryPerson> list) {
 
         this.context = context;
         this.list = list;
@@ -39,7 +39,7 @@ public class DeliveryPersonAdapter
     @Override
     public ViewHolder onCreateViewHolder(
             @NonNull ViewGroup parent,
-            int viewType){
+            int viewType) {
 
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.delivery_person_item, parent, false);
@@ -51,7 +51,7 @@ public class DeliveryPersonAdapter
     @Override
     public void onBindViewHolder(
             @NonNull ViewHolder holder,
-            int position){
+            int position) {
 
         DeliveryPerson person = list.get(position);
 
@@ -59,30 +59,30 @@ public class DeliveryPersonAdapter
 
         holder.tvVehicle.setText(person.vehicleNumber);
 
-        if(person.phone != null){
+        if (person.phone != null) {
 
             holder.tvPhone.setText(person.phone);
 
         }
 
-        if(person.status != null){
+        if (person.status != null) {
 
             holder.tvStatus.setText(person.status);
 
-            if(person.status.equalsIgnoreCase("Approved") ||
-                    person.status.equalsIgnoreCase("Rejected")){
+            if (person.status.equalsIgnoreCase("Approved") ||
+                    person.status.equalsIgnoreCase("Rejected")) {
 
                 holder.btnApprove.setVisibility(View.GONE);
                 holder.btnReject.setVisibility(View.GONE);
 
-            }else{
+            } else {
 
                 holder.btnApprove.setVisibility(View.VISIBLE);
                 holder.btnReject.setVisibility(View.VISIBLE);
 
             }
 
-        }else{
+        } else {
 
             holder.tvStatus.setText("Pending");
 
@@ -92,7 +92,7 @@ public class DeliveryPersonAdapter
 
             db.collection("Users")
                     .document(person.id)
-                    .update("status","Approved")
+                    .update("status", "Approved")
                     .addOnSuccessListener(unused -> {
 
                         Toast.makeText(context,
@@ -112,7 +112,7 @@ public class DeliveryPersonAdapter
 
             db.collection("Users")
                     .document(person.id)
-                    .update("status","Rejected")
+                    .update("status", "Rejected")
                     .addOnSuccessListener(unused -> {
 
                         Toast.makeText(context,
@@ -131,13 +131,13 @@ public class DeliveryPersonAdapter
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
 
         return list.size();
 
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName;
         TextView tvVehicle;
@@ -147,7 +147,7 @@ public class DeliveryPersonAdapter
         Button btnApprove;
         Button btnReject;
 
-        public ViewHolder(@NonNull View itemView){
+        public ViewHolder(@NonNull View itemView) {
 
             super(itemView);
 

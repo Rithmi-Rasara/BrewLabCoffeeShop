@@ -74,11 +74,7 @@ public class UpdateProductActivity extends AppCompatActivity {
         oldImage = intent.getStringExtra("imageUri");
 
         if (oldImage != null && !oldImage.isEmpty()) {
-            Glide.with(this)
-                    .load(oldImage)
-                    .placeholder(R.drawable.cappuccino)
-                    .error(R.drawable.cappuccino)
-                    .into(imgProduct);
+            Glide.with(this).load(oldImage).placeholder(R.drawable.cappuccino).error(R.drawable.cappuccino).into(imgProduct);
         }
 
         btnChooseImage.setOnClickListener(v -> {
@@ -114,42 +110,21 @@ public class UpdateProductActivity extends AppCompatActivity {
 
         String image = imageUri != null ? imageUri.toString() : oldImage;
 
-        Product product = new Product(
-                name,
-                price,
-                category,
-                desc,
-                image
-        );
+        Product product = new Product(name, price, category, desc, image);
 
-        db.collection("Products")
-                .document(productId)
-                .set(product)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this,
-                            "Product Updated Successfully",
-                            Toast.LENGTH_SHORT).show();
+        db.collection("Products").document(productId).set(product).addOnSuccessListener(unused -> {
+            Toast.makeText(this, "Product Updated Successfully", Toast.LENGTH_SHORT).show();
 
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+            finish();
+        }).addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private final ActivityResultLauncher<Intent> imagePicker =
-            registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK
-                                && result.getData() != null) {
+    private final ActivityResultLauncher<Intent> imagePicker = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
 
-                            imageUri = result.getData().getData();
+            imageUri = result.getData().getData();
 
-                            Glide.with(this)
-                                    .load(imageUri)
-                                    .into(imgProduct);
-                        }
-                    });
+            Glide.with(this).load(imageUri).into(imgProduct);
+        }
+    });
 }

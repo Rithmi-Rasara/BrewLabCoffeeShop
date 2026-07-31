@@ -14,11 +14,7 @@ public class Product {
     }
 
 
-    public Product(String name,
-                   String price,
-                   String category,
-                   String desc,
-                   String imageUri) {
+    public Product(String name, String price, String category, String desc, String imageUri) {
 
         this.name = name;
         this.price = price;
