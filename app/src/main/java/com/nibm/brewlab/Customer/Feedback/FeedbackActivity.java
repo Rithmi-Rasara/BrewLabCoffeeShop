@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 import java.util.HashMap;
@@ -22,7 +23,8 @@ public class FeedbackActivity extends AppCompatActivity {
     Button btnSubmit;
 
     FirebaseAuth auth;
-    DatabaseReference feedbackRef, usersRef;
+    FirebaseFirestore firestore;
+    DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,10 @@ public class FeedbackActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btnSubmitFeedback);
 
         auth = FirebaseAuth.getInstance();
-        feedbackRef = FirebaseDatabase.getInstance().getReference("Feedback");
+        // Feedback is read by the admin dashboard / admin Feedback screen from
+        // Firestore, so it must be written to Firestore here too (previously
+        // this wrote to the Realtime Database and admin never saw it).
+        firestore = FirebaseFirestore.getInstance();
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
         btnSubmit.setOnClickListener(v -> submitFeedback());
@@ -66,23 +71,24 @@ public class FeedbackActivity extends AppCompatActivity {
             String name = snapshot.getValue(String.class);
             if (name == null) name = "Customer";
 
-            String feedbackId = feedbackRef.push().getKey();
-
+            // Field names must match Admin/Feedback/Feedback.java
+            // (customerName, message, rating) so the admin side can parse it.
             HashMap<String, Object> feedback = new HashMap<>();
             feedback.put("uid", uid);
             feedback.put("customerName", name);
+            feedback.put("message", comment);
             feedback.put("rating", rating);
-            feedback.put("comment", comment);
             feedback.put("timestamp", System.currentTimeMillis());
 
-            if (feedbackId != null) {
-                feedbackRef.child(feedbackId).setValue(feedback);
-            }
-
-            Toast.makeText(this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
-
-            ratingBar.setRating(0);
-            edtComment.setText("");
+            firestore.collection("Feedback")
+                    .add(feedback)
+                    .addOnSuccessListener(docRef -> {
+                        Toast.makeText(this, "Thank you for your feedback!", Toast.LENGTH_SHORT).show();
+                        ratingBar.setRating(0);
+                        edtComment.setText("");
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
     }
 }

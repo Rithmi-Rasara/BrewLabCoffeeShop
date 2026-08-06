@@ -91,7 +91,11 @@ public class AssignedOrdersActivity extends AppCompatActivity {
                     order.setId(child.getKey());
                     String status = order.getStatus();
 
-                    boolean isNewRequest = "Pending".equalsIgnoreCase(status);
+                    // NOTE: "Pending" = just placed by customer, still
+                    // waiting for admin approval - should NOT show here yet.
+                    // Only "Preparing" (admin approved it) is open for any
+                    // delivery person to accept.
+                    boolean isNewRequest = "Preparing".equalsIgnoreCase(status);
 
                     boolean isMyActiveDelivery = "Out for Delivery".equalsIgnoreCase(status)
                             && myUid.equals(order.getDeliveryPersonUid());

@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.graphics.Color;
 
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,14 +48,28 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
         holder.txtStatus.setText(status);
 
         if ("Pending".equalsIgnoreCase(status)) {
+
             holder.txtStatus.setTextColor(Color.RED);
+
         } else if ("Preparing".equalsIgnoreCase(status)) {
+
             holder.txtStatus.setTextColor(Color.parseColor("#FFA500"));
+
         } else if ("Delivered".equalsIgnoreCase(status)) {
+
             holder.txtStatus.setTextColor(Color.GREEN);
         }
 
-        holder.txtStatus.setText(order.getOrderStatus());
+        if ("Preparing".equalsIgnoreCase(status) ||
+                "Delivered".equalsIgnoreCase(status) || "Out for Delivery".equalsIgnoreCase(status)) {
+
+            holder.btnView.setVisibility(View.GONE);
+
+        } else {
+
+            holder.btnView.setVisibility(View.VISIBLE);
+        }
+
 
         holder.btnView.setOnClickListener(v -> {
 
@@ -71,9 +85,14 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         });
 
+
         holder.btnDelete.setOnClickListener(v -> {
 
-            FirebaseFirestore.getInstance().collection("Orders").document(order.getId()).delete();
+            FirebaseDatabase.getInstance()
+                    .getReference("Orders")
+                    .child(order.getId())
+                    .removeValue();
+
         });
     }
 

@@ -16,9 +16,10 @@
     <color name="primary">#D89A5C</color>
     <color name="gray">#BBBBBB</color>
 
-    <!-- Delivery dashboard accents -->
     <color name="text_white">#FFFFFFFF</color>
     <color name="text_gray">#AAAAAA</color>
+    <color name="text_secondary">#B8C1CC</color>
+
     <color name="background_overlay">#CC120B08</color>
     <color name="success">#6FCF97</color>
     <color name="card_stroke">#3A2A22</color>

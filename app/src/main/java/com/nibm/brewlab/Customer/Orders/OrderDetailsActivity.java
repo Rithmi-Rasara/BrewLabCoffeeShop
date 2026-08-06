@@ -81,8 +81,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 return "Order received. Waiting for the shop to start preparing.";
             case "Preparing":
                 return "Your coffee is being brewed right now.";
-            case "On the way":
-                return "Order picked up by delivery. On the way to you.";
+            case "Out for Delivery":
+                return "Order picked up by delivery. On the way to you!";
             case "Delivered":
                 return "Order delivered. Enjoy your coffee!";
             default:

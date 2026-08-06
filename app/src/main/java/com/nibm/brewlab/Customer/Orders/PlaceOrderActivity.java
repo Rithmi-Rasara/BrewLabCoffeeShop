@@ -2,15 +2,8 @@ package com.nibm.brewlab.Customer.Orders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,22 +20,31 @@ import com.nibm.brewlab.Customer.Cart.CartItem;
 import com.nibm.brewlab.Customer.Cart.CartManager;
 import com.nibm.brewlab.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PlaceOrderActivity extends AppCompatActivity {
 
+    // NEW
+    EditText edtOrderId, edtCustomerId;
+
     EditText edtAddress;
-    Spinner spinnerPayment;
     TextView txtOrderTotal;
     Button btnPlaceOrder;
-
-    LinearLayout cardFieldsLayout;
-    EditText edtCardNumber, edtCardExpiry, edtCardCvv, edtCardName;
 
     double cartTotal = 0;
     String itemsSummary = "";
     Map<String, Long> itemsData = new HashMap<>();
+
+    // NEW: only these cart keys (checkbox-selected in CartActivity) are
+    // included in this order and cleared from the cart afterwards. If this
+    // activity is opened without the extra (e.g. old entry point), every
+    // cart item is treated as selected so nothing silently breaks.
+    Set<String> selectedCartKeys;
 
     FirebaseAuth auth;
     DatabaseReference ordersRef, usersRef;
@@ -56,113 +58,25 @@ public class PlaceOrderActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         }
 
+        // NEW
+        edtOrderId = findViewById(R.id.edtOrderId);
+        edtCustomerId = findViewById(R.id.edtCustomerId);
+
         edtAddress = findViewById(R.id.edtAddress);
-        spinnerPayment = findViewById(R.id.spinnerPayment);
         txtOrderTotal = findViewById(R.id.txtOrderTotal);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
-
-        cardFieldsLayout = findViewById(R.id.cardFieldsLayout);
-        edtCardName = findViewById(R.id.edtCardName);
-        edtCardNumber = findViewById(R.id.edtCardNumber);
-        edtCardExpiry = findViewById(R.id.edtCardExpiry);
-        edtCardCvv = findViewById(R.id.edtCardCvv);
 
         auth = FirebaseAuth.getInstance();
         ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
-        String[] paymentOptions = {"Cash on Delivery", "Card Payment"};
-        ArrayAdapter<String> paymentAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_dropdown_item, paymentOptions);
-        spinnerPayment.setAdapter(paymentAdapter);
-
-        spinnerPayment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                cardFieldsLayout.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                cardFieldsLayout.setVisibility(View.GONE);
-            }
-        });
-
-        formatCardNumberInput();
-        formatExpiryInput();
+        // NEW: grab the keys CartActivity sent, if any
+        List<String> keysExtra = getIntent().getStringArrayListExtra("selectedCartKeys");
+        selectedCartKeys = (keysExtra != null) ? new HashSet<>(keysExtra) : null;
 
         loadCartSummary();
 
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
-    }
-
-    // Auto-inserts a space every 4 digits while typing the card number.
-    private void formatCardNumberInput() {
-
-        edtCardNumber.addTextChangedListener(new TextWatcher() {
-            boolean editing = false;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if (editing) return;
-                editing = true;
-
-                String digits = s.toString().replaceAll("[^0-9]", "");
-                if (digits.length() > 16) digits = digits.substring(0, 16);
-
-                StringBuilder formatted = new StringBuilder();
-                for (int i = 0; i < digits.length(); i++) {
-                    if (i > 0 && i % 4 == 0) formatted.append(" ");
-                    formatted.append(digits.charAt(i));
-                }
-
-                s.replace(0, s.length(), formatted.toString());
-                editing = false;
-            }
-        });
-    }
-
-    // Auto-inserts "/" after 2 digits for MM/YY expiry.
-    private void formatExpiryInput() {
-
-        edtCardExpiry.addTextChangedListener(new TextWatcher() {
-            boolean editing = false;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if (editing) return;
-                editing = true;
-
-                String digits = s.toString().replaceAll("[^0-9]", "");
-                if (digits.length() > 4) digits = digits.substring(0, 4);
-
-                String formatted = digits;
-                if (digits.length() > 2) {
-                    formatted = digits.substring(0, 2) + "/" + digits.substring(2);
-                }
-
-                s.replace(0, s.length(), formatted);
-                editing = false;
-            }
-        });
     }
 
     private void loadCartSummary() {
@@ -176,6 +90,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
                 itemsData.clear();
 
                 for (DataSnapshot child : snapshot.getChildren()) {
+
+                    // NEW: skip items that weren't checkbox-selected in the cart
+                    if (selectedCartKeys != null && !selectedCartKeys.contains(child.getKey())) {
+                        continue;
+                    }
 
                     CartItem item = child.getValue(CartItem.class);
 
@@ -193,9 +112,6 @@ public class PlaceOrderActivity extends AppCompatActivity {
                                 .append(item.getQuantity())
                                 .append(", ");
 
-                        // Quantities are combined per product so "Reorder" can
-                        // add the right total amount back to the cart later
-                        // (reorder uses default customization, see MyOrdersAdapter).
                         long existingQty = itemsData.containsKey(item.getProductId())
                                 ? itemsData.get(item.getProductId()) : 0;
                         itemsData.put(item.getProductId(), existingQty + item.getQuantity());
@@ -223,47 +139,35 @@ public class PlaceOrderActivity extends AppCompatActivity {
         });
     }
 
-    // Simple client-side validation only - this is NOT a real payment
-    // gateway. No card data is stored or sent anywhere; it's just enough
-    // validation to demonstrate the card-payment flow for the assessment.
-    private boolean validateCardDetails() {
-
-        String name = edtCardName.getText().toString().trim();
-        String number = edtCardNumber.getText().toString().replaceAll("\\s", "");
-        String expiry = edtCardExpiry.getText().toString().trim();
-        String cvv = edtCardCvv.getText().toString().trim();
-
-        if (name.isEmpty()) {
-            edtCardName.setError("Enter name on card");
-            edtCardName.requestFocus();
-            return false;
-        }
-
-        if (number.length() != 16) {
-            edtCardNumber.setError("Card number must be 16 digits");
-            edtCardNumber.requestFocus();
-            return false;
-        }
-
-        if (!expiry.matches("(0[1-9]|1[0-2])/\\d{2}")) {
-            edtCardExpiry.setError("Use MM/YY format");
-            edtCardExpiry.requestFocus();
-            return false;
-        }
-
-        if (cvv.length() != 3) {
-            edtCardCvv.setError("CVV must be 3 digits");
-            edtCardCvv.requestFocus();
-            return false;
-        }
-
-        return true;
-    }
-
     private void placeOrder() {
 
+        // NEW
+        String orderId = edtOrderId.getText().toString().trim();
+        String customerId = edtCustomerId.getText().toString().trim();
+
         String address = edtAddress.getText().toString().trim();
-        String payment = spinnerPayment.getSelectedItem().toString();
+        String payment = "Cash on Delivery";
+
+        // NEW
+        if (orderId.isEmpty()) {
+            edtOrderId.setError("Enter an Order ID");
+            edtOrderId.requestFocus();
+            return;
+        }
+
+        // Firebase Realtime Database keys cannot contain '.', '#', '$', '[', ']', '/' or whitespace.
+        if (orderId.matches(".*[.#$\\[\\]/\\s].*")) {
+            edtOrderId.setError("No spaces or . # $ [ ] / characters allowed");
+            edtOrderId.requestFocus();
+            return;
+        }
+
+        // NEW
+        if (customerId.isEmpty()) {
+            edtCustomerId.setError("Enter a Customer ID");
+            edtCustomerId.requestFocus();
+            return;
+        }
 
         if (address.isEmpty()) {
             edtAddress.setError("Enter delivery address");
@@ -272,55 +176,86 @@ public class PlaceOrderActivity extends AppCompatActivity {
         }
 
         if (itemsData.isEmpty()) {
-            Toast.makeText(this, "Your cart is empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (payment.equals("Card Payment") && !validateCardDetails()) {
+            Toast.makeText(this, "No items selected to order", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnPlaceOrder.setEnabled(false);
 
-        String uid = auth.getCurrentUser().getUid();
+        // NEW: make sure this Order ID isn't already used before writing anything
+        ordersRef.child(orderId).get().addOnSuccessListener(existingSnap -> {
 
-        usersRef.child(uid).get().addOnSuccessListener(snapshot -> {
+            if (existingSnap.exists()) {
+                btnPlaceOrder.setEnabled(true);
+                edtOrderId.setError("This Order ID is already used, pick another one");
+                edtOrderId.requestFocus();
+                return;
+            }
 
-            String customerName = snapshot.child("name").getValue(String.class);
-            if (customerName == null) customerName = "Customer";
+            String uid = auth.getCurrentUser().getUid();
 
-            String orderId = ordersRef.push().getKey();
+            usersRef.child(uid).get().addOnSuccessListener(snapshot -> {
 
-            String paymentLabel = payment.equals("Card Payment")
-                    ? "Card Payment (**** " + edtCardNumber.getText().toString().replaceAll("\\s", "").substring(12) + ")"
-                    : payment;
+                String nameFromDb = snapshot.child("name").getValue(String.class);
+                final String customerName = (nameFromDb != null) ? nameFromDb : "Customer";
 
-            CustomerOrder order = new CustomerOrder(
-                    uid,
-                    customerName,
-                    String.format("%.2f", cartTotal),
-                    "Pending",
-                    paymentLabel,
-                    address,
-                    System.currentTimeMillis(),
-                    itemsSummary,
-                    itemsData
-            );
+                String paymentLabel = payment;
 
-            if (orderId != null) {
+                CustomerOrder order = new CustomerOrder(
+                        uid,
+                        customerName,
+                        String.format("%.2f", cartTotal),
+                        "Pending",
+                        paymentLabel,
+                        address,
+                        System.currentTimeMillis(),
+                        itemsSummary,
+                        itemsData
+                );
+
+                // NEW
+                order.setOrderId(orderId);
+                order.setCustomerId(customerId);
 
                 ordersRef.child(orderId).setValue(order).addOnSuccessListener(unused -> {
 
                     // Loyalty points: 1 point per Rs. 100 spent
+                    // Written straight into Firestore "Loyalty" (same doc admin's
+                    // Manage Loyalty screen and the dashboard/profile cards use)
+                    // so points AND level stay in sync everywhere - Realtime DB
+                    // "loyaltyPoints" was a separate, disconnected value.
                     long earnedPoints = (long) (cartTotal / 100);
-                    usersRef.child(uid).child("loyaltyPoints").get().addOnSuccessListener(pointSnap -> {
 
-                        Long current = pointSnap.getValue(Long.class);
-                        long updated = (current != null ? current : 0) + earnedPoints;
-                        usersRef.child(uid).child("loyaltyPoints").setValue(updated);
-                    });
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                            .collection("Loyalty").document(uid).get()
+                            .addOnSuccessListener(loyaltySnap -> {
 
-                    CartManager.clearCart();
+                                Long currentPoints = (loyaltySnap != null && loyaltySnap.exists())
+                                        ? loyaltySnap.getLong("points") : null;
+                                long updatedPoints = (currentPoints != null ? currentPoints : 0) + earnedPoints;
+                                String updatedLevel = com.nibm.brewlab.Admin.Loyalty.Loyalty
+                                        .calculateLevel((int) updatedPoints);
+
+                                java.util.HashMap<String, Object> loyaltyData = new java.util.HashMap<>();
+                                loyaltyData.put("name", customerName);
+                                loyaltyData.put("email", auth.getCurrentUser().getEmail());
+                                loyaltyData.put("points", updatedPoints);
+                                loyaltyData.put("level", updatedLevel);
+
+                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                        .collection("Loyalty").document(uid)
+                                        .set(loyaltyData, com.google.firebase.firestore.SetOptions.merge());
+                            });
+
+                    // NEW: only clear the items that were actually part of this
+                    // order, so anything left unselected stays in the cart.
+                    if (selectedCartKeys != null) {
+                        for (String key : selectedCartKeys) {
+                            CartManager.removeItem(key);
+                        }
+                    } else {
+                        CartManager.clearCart();
+                    }
 
                     Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_LONG).show();
 
@@ -331,7 +266,11 @@ public class PlaceOrderActivity extends AppCompatActivity {
                     btnPlaceOrder.setEnabled(true);
                     Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
-            }
+
+            }).addOnFailureListener(e -> {
+                btnPlaceOrder.setEnabled(true);
+                Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            });
 
         }).addOnFailureListener(e -> {
             btnPlaceOrder.setEnabled(true);

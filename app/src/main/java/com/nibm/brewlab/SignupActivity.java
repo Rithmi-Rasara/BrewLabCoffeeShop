@@ -71,7 +71,7 @@ public class SignupActivity extends AppCompatActivity {
         }
 
 
-        String[] roles = {"Customer", "Admin", "Delivery Person"};
+        String[] roles = {"Customer", "Delivery Person"};
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, roles);
@@ -151,6 +151,21 @@ public class SignupActivity extends AppCompatActivity {
 
                     // Save Firestore
                     firestore.collection("Users").document(uid).set(user);
+
+
+                    // Create a linked Loyalty record for customers so admin's
+                    // Manage Loyalty screen and the customer's own profile
+                    // read/write the same Firestore document (keyed by uid).
+                    if ("Customer".equals(role)) {
+
+                        HashMap<String, Object> loyalty = new HashMap<>();
+                        loyalty.put("name", name);
+                        loyalty.put("email", email);
+                        loyalty.put("points", 0);
+                        loyalty.put("level", "Bronze");
+
+                        firestore.collection("Loyalty").document(uid).set(loyalty);
+                    }
 
 
                     // Save Realtime Database

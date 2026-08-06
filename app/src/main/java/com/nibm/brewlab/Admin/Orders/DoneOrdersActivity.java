@@ -2,12 +2,16 @@ package com.nibm.brewlab.Admin.Orders;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -17,7 +21,7 @@ public class DoneOrdersActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     OrdersAdapter adapter;
     ArrayList<Order> orderList;
-    FirebaseFirestore db;
+    DatabaseReference ordersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,28 +37,36 @@ public class DoneOrdersActivity extends AppCompatActivity {
         adapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(adapter);
 
-        db = FirebaseFirestore.getInstance();
+        ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
         loadDoneOrders();
     }
 
     private void loadDoneOrders() {
 
-        db.collection("Orders").whereEqualTo("status", "Completed").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        ordersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            orderList.clear();
+                orderList.clear();
 
-            for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                for (DataSnapshot child : snapshot.getChildren()) {
 
-                Order order = doc.toObject(Order.class);
+                    String status = child.child("status").getValue(String.class);
 
-                if (order != null) {
-                    order.setId(doc.getId());
-                    orderList.add(order);
+                    // NOTE: was checking "Completed" before, but the actual
+                    // value written everywhere else in the app is "Delivered"
+                    if (status == null || !status.equalsIgnoreCase("Delivered")) continue;
+
+                    orderList.add(OrderMapper.fromSnapshot(child));
                 }
+
+                adapter.notifyDataSetChanged();
             }
 
-            adapter.notifyDataSetChanged();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 }

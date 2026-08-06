@@ -71,8 +71,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        btnLogin.setEnabled(false);
-        btnLogin.setText("");
+        btnLogin.setClickable(false);
+        btnLogin.setClickable(true);
+        btnLogin.setAlpha(0.7f);
+        btnLogin.setText("Logging in...");
         loginLoader.setVisibility(View.VISIBLE);
 
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
@@ -85,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 loginLoader.setVisibility(View.GONE);
                 btnLogin.setEnabled(true);
+                btnLogin.setAlpha(1f);
                 btnLogin.setText("Login");
 
                 if (snapshot.exists()) {
@@ -94,8 +97,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     String status = snapshot.getString("status");
 
-
-                    // Customer / Delivery approval check
 
                     if (role != null && (role.equalsIgnoreCase("Customer") || role.equalsIgnoreCase("Delivery Person"))) {
 
@@ -157,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 loginLoader.setVisibility(View.GONE);
                 btnLogin.setEnabled(true);
+                btnLogin.setAlpha(1f);
                 btnLogin.setText("Login");
 
                 Log.e("DATABASE_ERROR", e.getMessage(), e);
@@ -168,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
 
             loginLoader.setVisibility(View.GONE);
             btnLogin.setEnabled(true);
+            btnLogin.setAlpha(1f);
             btnLogin.setText("Login");
 
             Log.e("LOGIN_ERROR", e.getMessage(), e);
