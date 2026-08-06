@@ -15,10 +15,18 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
+        <!-- NEW -->
+        <CheckBox
+            android:id="@+id/checkboxSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#FFB74D" />
+
         <ImageView
             android:id="@+id/cartImage"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_marginStart="8dp"
             android:background="#3B2A23"
             android:padding="6dp"
             android:scaleType="centerCrop"

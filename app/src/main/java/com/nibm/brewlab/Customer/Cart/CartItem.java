@@ -13,6 +13,9 @@ public class CartItem {
     private String addOns;
     private String cartKey;
 
+    // NEW: Used to mark whether this item is selected for checkout
+    private boolean selected = false;
+
     public CartItem() {
     }
 
@@ -26,10 +29,11 @@ public class CartItem {
         this.size = "Medium";
         this.sugarLevel = "Normal";
         this.addOns = "None";
+        this.selected = false;
     }
 
     public CartItem(String productId, String name, String price, String category, String imageUri,
-                     int quantity, String size, String sugarLevel, String addOns) {
+                    int quantity, String size, String sugarLevel, String addOns) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -39,6 +43,7 @@ public class CartItem {
         this.size = size;
         this.sugarLevel = sugarLevel;
         this.addOns = addOns;
+        this.selected = false;
     }
 
     public String getSize() {
@@ -119,5 +124,15 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    // NEW
+    public boolean isSelected() {
+        return selected;
+    }
+
+    // NEW
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

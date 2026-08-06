@@ -3,12 +3,16 @@ package com.nibm.brewlab.Admin.Orders;
 import android.os.Bundle;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
@@ -19,7 +23,9 @@ public class OrdersActivity extends AppCompatActivity {
     ArrayList<Order> orderList;
     OrdersAdapter ordersAdapter;
     Button allOrders, pendingOrders, doneOrders;
-    FirebaseFirestore db;
+    DatabaseReference ordersRef;
+    String currentFilter = "ALL";
+    ValueEventListener activeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +47,8 @@ public class OrdersActivity extends AppCompatActivity {
         ordersAdapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(ordersAdapter);
 
-        db = FirebaseFirestore.getInstance();
+        // Orders live in Realtime Database - same place Customer/Delivery use.
+        ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
         loadOrders("ALL");
 
@@ -52,52 +59,49 @@ public class OrdersActivity extends AppCompatActivity {
 
     private void loadOrders(String filter) {
 
-        db.collection("Orders").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        currentFilter = filter;
 
-            orderList.clear();
+        if (activeListener != null) {
+            ordersRef.removeEventListener(activeListener);
+        }
 
-            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+        activeListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                Order order = new Order();
+                orderList.clear();
 
-                order.setId(doc.getId());
-                order.setUserId(doc.getString("userId"));
-                order.setDeliveryAddress(doc.getString("address"));
-                order.setPaymentMethod(doc.getString("payment"));
-                order.setOrderStatus(doc.getString("status"));
+                for (DataSnapshot child : snapshot.getChildren()) {
 
-                Number total = doc.getDouble("total");
-                if (total == null) {
-                    total = doc.getLong("total");
-                }
+                    Order order = OrderMapper.fromSnapshot(child);
+                    String status = order.getOrderStatus();
 
-                if (total != null) {
-                    order.setTotalAmount(total.doubleValue());
-                }
+                    if ("ALL".equals(currentFilter)) {
 
-                order.setCustomerName(doc.getString("userId"));
-
-                String status = order.getOrderStatus();
-
-                if ("ALL".equals(filter)) {
-
-                    orderList.add(order);
-
-                } else if ("Pending".equals(filter)) {
-
-                    if (status != null && status.equalsIgnoreCase("pending")) {
                         orderList.add(order);
-                    }
 
-                } else if ("Delivered".equals(filter)) {
+                    } else if ("Pending".equals(currentFilter)) {
 
-                    if (status != null && status.equalsIgnoreCase("Delivered")) {
-                        orderList.add(order);
+                        if (status != null && status.equalsIgnoreCase("Pending")) {
+                            orderList.add(order);
+                        }
+
+                    } else if ("Delivered".equals(currentFilter)) {
+
+                        if (status != null && status.equalsIgnoreCase("Delivered")) {
+                            orderList.add(order);
+                        }
                     }
                 }
+
+                ordersAdapter.notifyDataSetChanged();
             }
 
-            ordersAdapter.notifyDataSetChanged();
-        });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        };
+
+        ordersRef.addValueEventListener(activeListener);
     }
 }
