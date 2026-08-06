@@ -10,9 +10,12 @@ import android.widget.Toast;
 import com.google.firebase.firestore.FieldValue;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import android.widget.Spinner;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,6 +34,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     String orderId;
 
     FirebaseFirestore db;
+    DatabaseReference ordersRef;
 
     Spinner spDeliveryPerson;
     ArrayList<String> deliveryList = new ArrayList<>();
@@ -64,6 +68,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         db = FirebaseFirestore.getInstance();
+        // Orders themselves live in Realtime Database - same place Customer
+        // places them and Delivery reads them from.
+        ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
         orderId = getIntent().getStringExtra("orderId");
 
@@ -151,7 +158,16 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void assignDelivery(String deliveryId, String deliveryName) {
 
-        FirebaseFirestore.getInstance().collection("Orders").document(orderId).update("deliveryPersonId", deliveryId, "deliveryPersonName", deliveryName, "status", "Preparing").addOnSuccessListener(unused -> {
+        // NOTE: field names here must match what Delivery module
+        // (DeliveryOrder.java) actually reads: "deliveryPersonName" is a
+        // suggestion only - the delivery pool still works by any available
+        // delivery person accepting. Setting status to "Preparing" is what
+        // makes this order visible to the delivery pool at all (approval gate).
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", "Preparing");
+        updates.put("deliveryPersonName", deliveryName);
+
+        ordersRef.child(orderId).updateChildren(updates).addOnSuccessListener(unused -> {
 
             sendNotification(deliveryId);
 

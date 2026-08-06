@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BrewLab"
         tools:targetApi="31">
+
+        <!-- NEW: required or the MapView stays blank with no error shown to the user.
+             Replace AIzaSyCHxW8MENxQwy0bHN7VzJ7TKHu2bkiCzPI with a real key from Google Cloud Console
+             (Maps SDK for Android must be enabled on that key). -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCHxW8MENxQwy0bHN7VzJ7TKHu2bkiCzPI" />
 
         <activity
             android:name=".GetStartedActivity"
@@ -62,6 +71,7 @@
         <activity android:name=".Customer.Orders.PlaceOrderActivity" android:exported="false"/>
         <activity android:name=".Customer.Orders.MyOrdersActivity" android:exported="false"/>
         <activity android:name=".Customer.Orders.OrderDetailsActivity" android:exported="false"/>
+        <activity android:name=".Customer.Orders.DeliveryTrackingActivity" android:exported="false"/>
         <activity android:name=".Customer.Profile.MyProfileActivity" android:exported="false"/>
         <activity android:name=".Customer.Feedback.FeedbackActivity" android:exported="false"/>
 

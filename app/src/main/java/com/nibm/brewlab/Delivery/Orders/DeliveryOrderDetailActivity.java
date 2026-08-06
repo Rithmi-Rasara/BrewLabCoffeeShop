@@ -189,7 +189,10 @@ public class DeliveryOrderDetailActivity extends AppCompatActivity implements On
         txtPayment.setText(order.getPaymentMethod());
         txtDate.setText(DateFormat.format("dd MMM yyyy, hh:mm a", order.getTimestamp()));
 
-        boolean isPending = "Pending".equalsIgnoreCase(order.getStatus());
+        // "Preparing" = admin has approved the order and it's now open for
+        // any delivery person to accept. "Pending" (not yet admin-approved)
+        // is intentionally excluded so it doesn't jump the queue.
+        boolean isPending = "Preparing".equalsIgnoreCase(order.getStatus());
         boolean isMine = myUid.equals(order.getDeliveryPersonUid());
         boolean isOutForDelivery = "Out for Delivery".equalsIgnoreCase(order.getStatus()) && isMine;
         boolean isDelivered = "Delivered".equalsIgnoreCase(order.getStatus());

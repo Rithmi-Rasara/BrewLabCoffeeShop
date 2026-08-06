@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nibm.brewlab.R;
 
 public class MyProfileActivity extends AppCompatActivity {
@@ -25,6 +26,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
     DatabaseReference userRef;
+    FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +47,10 @@ public class MyProfileActivity extends AppCompatActivity {
         String uid = auth.getCurrentUser().getUid();
 
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+        firestore = FirebaseFirestore.getInstance();
 
         loadProfile();
+        loadLoyaltyPoints(uid);
 
         btnSave.setOnClickListener(v -> saveProfile());
     }
@@ -60,12 +64,10 @@ public class MyProfileActivity extends AppCompatActivity {
                 String name = snapshot.child("name").getValue(String.class);
                 String phone = snapshot.child("phone").getValue(String.class);
                 String email = snapshot.child("email").getValue(String.class);
-                Long points = snapshot.child("loyaltyPoints").getValue(Long.class);
 
                 edtName.setText(name != null ? name : "");
                 edtPhone.setText(phone != null ? phone : "");
                 txtEmail.setText(email != null ? email : auth.getCurrentUser().getEmail());
-                txtLoyaltyPoints.setText(String.valueOf(points != null ? points : 0));
             }
 
             @Override
@@ -73,6 +75,25 @@ public class MyProfileActivity extends AppCompatActivity {
                 Toast.makeText(MyProfileActivity.this, "Failed: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void loadLoyaltyPoints(String uid) {
+
+        // Admin's Manage Loyalty screen updates Firestore "Loyalty" documents
+        // (keyed by uid), so the customer must read from the same place -
+        // reading Realtime DB here previously showed points that admin could
+        // never actually change.
+        firestore.collection("Loyalty").document(uid)
+                .addSnapshotListener((snapshot, error) -> {
+
+                    if (error != null || snapshot == null || !snapshot.exists()) {
+                        txtLoyaltyPoints.setText("0");
+                        return;
+                    }
+
+                    Long points = snapshot.getLong("points");
+                    txtLoyaltyPoints.setText(String.valueOf(points != null ? points : 0));
+                });
     }
 
     private void saveProfile() {

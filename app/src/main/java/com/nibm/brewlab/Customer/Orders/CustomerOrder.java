@@ -6,6 +6,11 @@ import java.util.Map;
 public class CustomerOrder {
 
     private String id;
+
+    // NEW
+    private String orderId;
+    private String customerId;
+
     private String uid;
     private String customerName;
     private String totalAmount;
@@ -16,13 +21,29 @@ public class CustomerOrder {
     private String itemsSummary;
     private Map<String, Long> itemsData;
 
+    // ===========================
+    // NEW: live delivery location
+    // Delivery person's app should push these two values
+    // to  Orders/{orderId}/deliveryLat  and  .../deliveryLng
+    // whenever status == "On the way"
+    // ===========================
+    private Double deliveryLat;
+    private Double deliveryLng;
+
     public CustomerOrder() {
         itemsData = new HashMap<>();
     }
 
-    public CustomerOrder(String uid, String customerName, String totalAmount, String status,
-                          String paymentMethod, String deliveryAddress, long timestamp,
-                          String itemsSummary, Map<String, Long> itemsData) {
+    public CustomerOrder(String uid,
+                         String customerName,
+                         String totalAmount,
+                         String status,
+                         String paymentMethod,
+                         String deliveryAddress,
+                         long timestamp,
+                         String itemsSummary,
+                         Map<String, Long> itemsData) {
+
         this.uid = uid;
         this.customerName = customerName;
         this.totalAmount = totalAmount;
@@ -42,6 +63,34 @@ public class CustomerOrder {
         this.id = id;
     }
 
+    // ===========================
+    // Order ID
+    // ===========================
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    // ===========================
+    // Customer ID
+    // ===========================
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    // ===========================
+    // UID
+    // ===========================
+
     public String getUid() {
         return uid;
     }
@@ -49,6 +98,10 @@ public class CustomerOrder {
     public void setUid(String uid) {
         this.uid = uid;
     }
+
+    // ===========================
+    // Customer Name
+    // ===========================
 
     public String getCustomerName() {
         return customerName;
@@ -58,6 +111,10 @@ public class CustomerOrder {
         this.customerName = customerName;
     }
 
+    // ===========================
+    // Total Amount
+    // ===========================
+
     public String getTotalAmount() {
         return totalAmount;
     }
@@ -65,6 +122,10 @@ public class CustomerOrder {
     public void setTotalAmount(String totalAmount) {
         this.totalAmount = totalAmount;
     }
+
+    // ===========================
+    // Status
+    // ===========================
 
     public String getStatus() {
         return status;
@@ -74,6 +135,10 @@ public class CustomerOrder {
         this.status = status;
     }
 
+    // ===========================
+    // Payment
+    // ===========================
+
     public String getPaymentMethod() {
         return paymentMethod;
     }
@@ -81,6 +146,10 @@ public class CustomerOrder {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+
+    // ===========================
+    // Address
+    // ===========================
 
     public String getDeliveryAddress() {
         return deliveryAddress;
@@ -90,6 +159,10 @@ public class CustomerOrder {
         this.deliveryAddress = deliveryAddress;
     }
 
+    // ===========================
+    // Time
+    // ===========================
+
     public long getTimestamp() {
         return timestamp;
     }
@@ -97,6 +170,10 @@ public class CustomerOrder {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    // ===========================
+    // Items Summary
+    // ===========================
 
     public String getItemsSummary() {
         return itemsSummary;
@@ -106,11 +183,35 @@ public class CustomerOrder {
         this.itemsSummary = itemsSummary;
     }
 
+    // ===========================
+    // Items
+    // ===========================
+
     public Map<String, Long> getItemsData() {
         return itemsData;
     }
 
     public void setItemsData(Map<String, Long> itemsData) {
         this.itemsData = itemsData;
+    }
+
+    // ===========================
+    // NEW: Delivery live location
+    // ===========================
+
+    public Double getDeliveryLat() {
+        return deliveryLat;
+    }
+
+    public void setDeliveryLat(Double deliveryLat) {
+        this.deliveryLat = deliveryLat;
+    }
+
+    public Double getDeliveryLng() {
+        return deliveryLng;
+    }
+
+    public void setDeliveryLng(Double deliveryLng) {
+        this.deliveryLng = deliveryLng;
     }
 }

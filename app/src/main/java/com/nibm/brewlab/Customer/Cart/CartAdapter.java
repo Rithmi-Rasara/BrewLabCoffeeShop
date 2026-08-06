@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nibm.brewlab.R;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
@@ -20,15 +22,18 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         void onIncrease(CartItem item);
         void onDecrease(CartItem item);
         void onRemove(CartItem item);
+        void onSelectionChanged();
     }
 
     Context context;
     ArrayList<CartItem> cartList;
+    Set<String> selectedKeys;
     CartActionListener listener;
 
-    public CartAdapter(Context context, ArrayList<CartItem> cartList, CartActionListener listener) {
+    public CartAdapter(Context context, ArrayList<CartItem> cartList, Set<String> selectedKeys, CartActionListener listener) {
         this.context = context;
         this.cartList = cartList;
+        this.selectedKeys = selectedKeys;
         this.listener = listener;
     }
 
@@ -65,6 +70,25 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             holder.image.setImageResource(R.drawable.cappuccino);
         }
 
+        // NEW: checkbox reflects/updates the selected-for-checkout set.
+        // setOnCheckedChangeListener(null) first so re-binding a recycled
+        // view doesn't fire a stale listener with the wrong checked value.
+        holder.checkboxSelect.setOnCheckedChangeListener(null);
+        holder.checkboxSelect.setChecked(item.getCartKey() != null && selectedKeys.contains(item.getCartKey()));
+        holder.checkboxSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            String key = item.getCartKey();
+            if (key == null) return;
+
+            if (isChecked) {
+                selectedKeys.add(key);
+            } else {
+                selectedKeys.remove(key);
+            }
+
+            listener.onSelectionChanged();
+        });
+
         holder.btnPlus.setOnClickListener(v -> listener.onIncrease(item));
         holder.btnMinus.setOnClickListener(v -> listener.onDecrease(item));
         holder.btnRemove.setOnClickListener(v -> listener.onRemove(item));
@@ -79,6 +103,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         ImageView image;
         TextView name, price, qty, customization;
+        CheckBox checkboxSelect;
         View btnPlus, btnMinus, btnRemove;
 
         public ViewHolder(@NonNull View itemView) {
@@ -89,6 +114,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             price = itemView.findViewById(R.id.cartPrice);
             qty = itemView.findViewById(R.id.cartQty);
             customization = itemView.findViewById(R.id.cartCustomization);
+            checkboxSelect = itemView.findViewById(R.id.checkboxSelect);
 
             btnPlus = itemView.findViewById(R.id.btnPlus);
             btnMinus = itemView.findViewById(R.id.btnMinus);
