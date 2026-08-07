@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F8F2EC">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update Loyalty Points"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textColor="#4E342E"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/edtPoints"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:inputType="number"
+        android:textColor="#4E342E"
+        android:textColorHint="#8D6E63"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:backgroundTint="#6F4E37"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnMinus"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:text="-1"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#6F4E37"/>
+
+        <Space
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnPlus"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:text="+1"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#C58A4A"/>
+
+    </LinearLayout>
+
+</LinearLayout>

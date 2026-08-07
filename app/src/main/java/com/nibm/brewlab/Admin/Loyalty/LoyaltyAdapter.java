@@ -64,57 +64,73 @@ public class LoyaltyAdapter extends RecyclerView.Adapter<LoyaltyAdapter.ViewHold
 
         holder.btnUpdatePoints.setOnClickListener(v -> {
 
+            View dialogView = LayoutInflater.from(context)
+                    .inflate(R.layout.dialog_update_points, null);
 
-            EditText input = new EditText(context);
+            EditText edtPoints = dialogView.findViewById(R.id.edtPoints);
+            Button btnMinus = dialogView.findViewById(R.id.btnMinus);
+            Button btnPlus = dialogView.findViewById(R.id.btnPlus);
 
-            input.setHint("Enter points");
+            edtPoints.setText(String.valueOf(loyalty.getPoints()));
 
+            btnPlus.setOnClickListener(view -> {
+                int value = Integer.parseInt(edtPoints.getText().toString());
+                value += 2;
+                edtPoints.setText(String.valueOf(value));
+            });
 
-            AlertDialog dialog = new AlertDialog.Builder(context).setTitle("Update Loyalty Points").setView(input)
+            btnMinus.setOnClickListener(view -> {
+                int value = Integer.parseInt(edtPoints.getText().toString());
 
-                    .setPositiveButton("Update", (dialogInterface, which) -> {
+                if (value >= 2) {
+                    value -= 2;
+                } else {
+                    value = 0;
+                }
 
+                edtPoints.setText(String.valueOf(value));
+            });
 
-                        String value = input.getText().toString();
+            new AlertDialog.Builder(context)
+                    .setView(dialogView)
+                    .setPositiveButton("Update", (dialog, which) -> {
 
+                        int newPoints;
 
-                        if (value.isEmpty()) {
-
-                            Toast.makeText(context, "Enter points", Toast.LENGTH_SHORT).show();
-
+                        try {
+                            newPoints = Integer.parseInt(
+                                    edtPoints.getText().toString().trim()
+                            );
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(context,
+                                    "Please enter valid points",
+                                    Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-
-                        int newPoints = Integer.parseInt(value);
-
-
                         String newLevel = Loyalty.calculateLevel(newPoints);
 
+                        db.collection("Loyalty")
+                                .document(loyalty.getId())
+                                .update(
+                                        "points", newPoints,
+                                        "level", newLevel
+                                )
+                                .addOnSuccessListener(unused -> {
 
-                        db.collection("Loyalty").document(loyalty.getId()).update("points", newPoints, "level", newLevel).addOnSuccessListener(unused -> {
+                                    loyalty.setPoints(newPoints);
+                                    loyalty.setLevel(newLevel);
 
+                                    notifyItemChanged(holder.getAdapterPosition());
 
-                            loyalty.setPoints(newPoints);
-                            loyalty.setLevel(newLevel);
-
-
-                            notifyItemChanged(position);
-
-
-                            Toast.makeText(context, "Points Updated", Toast.LENGTH_SHORT).show();
-
-                        });
+                                    Toast.makeText(context,
+                                            "Points Updated",
+                                            Toast.LENGTH_SHORT).show();
+                                });
 
                     })
-
                     .setNegativeButton("Cancel", null)
-
-                    .create();
-
-
-            dialog.show();
-
+                    .show();
 
         });
 

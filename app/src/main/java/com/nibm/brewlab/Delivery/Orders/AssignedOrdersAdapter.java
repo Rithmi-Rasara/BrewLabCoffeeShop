@@ -68,7 +68,7 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
         holder.txtTotal.setText("Rs. " + order.getTotalAmount());
         holder.txtDate.setText(DateFormat.format("dd MMM yyyy, hh:mm a", order.getTimestamp()));
 
-        boolean isPending = "Pending".equalsIgnoreCase(order.getStatus());
+        boolean isNewRequest = "Preparing".equalsIgnoreCase(order.getStatus());
 
         boolean isMyActiveDelivery = "Out for Delivery".equalsIgnoreCase(order.getStatus())
                 && myUid.equals(order.getDeliveryPersonUid());
@@ -81,7 +81,7 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
             holder.txtStatusBadge.setTextColor(0xFFD89A5C);
         }
 
-        holder.layoutAcceptReject.setVisibility(isPending ? View.VISIBLE : View.GONE);
+        holder.layoutAcceptReject.setVisibility(isNewRequest ? View.VISIBLE : View.GONE);
 
         holder.btnReject.setOnClickListener(v ->
                 Toast.makeText(context, "Skipped. It'll stay available for other riders.", Toast.LENGTH_SHORT).show());
