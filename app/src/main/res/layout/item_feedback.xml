@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="15dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/card_bg">
+
+    <TextView
+        android:id="@+id/txtCustomerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Customer"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="17sp"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="?android:attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1"
+        android:isIndicator="true"/>
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#DDDDDD"
+        android:text="Very Good Coffee"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

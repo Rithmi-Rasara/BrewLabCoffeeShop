@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BrewLab</string>
+    <string name="revenue_amount">Rs. %1$s</string>
+    <string name="revenue_error">Rs. 0</string>
 </resources>

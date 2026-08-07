@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#120B08">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Category"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"/>
+
+
+    <EditText
+        android:id="@+id/edtCategoryName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Category Name"
+        android:padding="12dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#BBBBBB"
+        android:background="@drawable/search_bg"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:layout_marginTop="20dp">
+
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:backgroundTint="#757575"
+            android:textColor="#FFFFFF"/>
+
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="#FF6F00"
+            android:textColor="#FFFFFF"/>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="#2A1B16"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <CheckBox
+            android:id="@+id/checkCartItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="#D89A5C" />
+
+        <ImageView
+            android:id="@+id/cartImage"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="#3B2A23"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cartName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cappuccino"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/cartPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Rs. 850.00"
+                android:textColor="#FFB74D"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/cartCustomization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Medium | Normal"
+                android:textColor="#BBBBBB"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnMinus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/card_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="−"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:contentDescription="Decrease" />
+
+        <TextView
+            android:id="@+id/cartQty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:text="1"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnPlus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/card_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:contentDescription="Increase" />
+
+        <ImageView
+            android:id="@+id/btnRemove"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="10dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:tint="#E53935"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Remove" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

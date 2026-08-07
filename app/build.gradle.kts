@@ -1,14 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.nibm.brewlab"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.nibm.brewlab"
@@ -29,6 +26,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -36,9 +34,40 @@ android {
 }
 
 dependencies {
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.ext.junit)
+    implementation ("com.google.firebase:firebase-firestore")
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation ("com.cloudinary:cloudinary-android:3.0.2")
+
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.activity:activity:1.10.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("com.google.firebase:firebase-firestore:26.0.0")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation ("com.google.firebase:firebase-auth")
+
+    implementation(libs.activity.ktx)
+
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation ("com.google.firebase:firebase-auth")
 }
