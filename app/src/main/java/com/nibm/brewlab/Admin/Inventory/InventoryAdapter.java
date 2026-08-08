@@ -65,17 +65,17 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.View
 
         if (item.getQuantity() <= 5) {
 
-            holder.tvStockStatus.setText("⚠ Low Stock");
+            holder.tvStockStatus.setText("Low Stock");
             holder.tvStockStatus.setTextColor(Color.RED);
 
         } else if (item.getQuantity() <= 10) {
 
-            holder.tvStockStatus.setText("⚠ Medium Stock");
+            holder.tvStockStatus.setText("Medium Stock");
             holder.tvStockStatus.setTextColor(Color.parseColor("#FFA500"));
 
         } else {
 
-            holder.tvStockStatus.setText("✓ Available");
+            holder.tvStockStatus.setText("Available");
             holder.tvStockStatus.setTextColor(Color.parseColor("#4CAF50"));
         }
 
@@ -93,9 +93,13 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.View
 
         holder.btnDelete.setOnClickListener(v -> {
 
-            new AlertDialog.Builder(holder.itemView.getContext()).setTitle("Delete Inventory").setMessage("Delete " + item.getName() + " ?").setPositiveButton("Delete", (dialog, which) -> {
+            new AlertDialog.Builder(holder.itemView.getContext())
+                    .setTitle("Delete Inventory")
+                    .setMessage("Delete " + item.getName() + " ?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
 
-                db.collection("Inventory").document(item.getId()).delete().addOnSuccessListener(unused -> {
+                db.collection("Inventory").document(item.getId())
+                        .delete().addOnSuccessListener(unused -> {
 
                     int currentPosition = holder.getAdapterPosition();
 
@@ -107,11 +111,13 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.View
 
                     }
 
-                    Toast.makeText(holder.itemView.getContext(), "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(holder.itemView.getContext(),
+                            "Deleted Successfully", Toast.LENGTH_SHORT).show();
 
                 }).addOnFailureListener(e ->
 
-                        Toast.makeText(holder.itemView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(holder.itemView.getContext(), e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
 
             }).setNegativeButton("Cancel", null).show();
 
@@ -142,7 +148,8 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.View
 
                 for (Inventory item : fullList) {
 
-                    if (item.getName().toLowerCase().contains(text) || String.valueOf(item.getQuantity()).contains(text)) {
+                    if (item.getName().toLowerCase().contains(text) || String.valueOf(item
+                            .getQuantity()).contains(text)) {
 
                         filteredList.add(item);
                     }

@@ -78,7 +78,8 @@ public class InventoryActivity extends AppCompatActivity {
 
     private void loadInventory() {
 
-        db.collection("Inventory").addSnapshotListener((value, error) -> {
+        db.collection("Inventory").addSnapshotListener((value,
+                                                        error) -> {
 
             if (error != null || value == null) {
                 return;

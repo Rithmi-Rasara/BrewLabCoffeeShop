@@ -6,10 +6,6 @@ public class InventoryItem {
     private String name;
     private int quantity;
 
-    public InventoryItem() {
-
-    }
-
     public InventoryItem(String id, String name, int quantity) {
 
         this.id = id;

@@ -1,5 +1,6 @@
 package com.nibm.brewlab.Admin.Feedback;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

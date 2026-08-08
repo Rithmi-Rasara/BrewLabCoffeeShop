@@ -128,7 +128,7 @@ public class AddInventoryActivity extends AppCompatActivity {
 
                             Toast.makeText(
                                     this,
-                                    "⚠ Low Stock Alert!",
+                                    "Low Stock Alert!",
                                     Toast.LENGTH_LONG
                             ).show();
                         }
