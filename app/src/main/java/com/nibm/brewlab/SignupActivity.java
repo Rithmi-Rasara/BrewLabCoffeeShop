@@ -149,13 +149,8 @@ public class SignupActivity extends AppCompatActivity {
                     user.put("status", "Pending");
 
 
-                    // Save Firestore
                     firestore.collection("Users").document(uid).set(user);
 
-
-                    // Create a linked Loyalty record for customers so admin's
-                    // Manage Loyalty screen and the customer's own profile
-                    // read/write the same Firestore document (keyed by uid).
                     if ("Customer".equals(role)) {
 
                         HashMap<String, Object> loyalty = new HashMap<>();
@@ -168,7 +163,6 @@ public class SignupActivity extends AppCompatActivity {
                     }
 
 
-                    // Save Realtime Database
                     databaseReference.child(uid).setValue(user).addOnCompleteListener(dbTask -> {
 
 
