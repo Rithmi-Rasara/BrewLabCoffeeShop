@@ -37,9 +37,6 @@ public class PendingOrdersActivity extends AppCompatActivity {
         adapter = new OrdersAdapter(orderList);
         recyclerView.setAdapter(adapter);
 
-        // NOTE: Orders live in Realtime Database (same place Customer places
-        // them and Delivery reads them from) - NOT Firestore. Admin used to
-        // query Firestore, so new customer orders never showed up here.
         ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
         loadPendingOrders();
@@ -57,7 +54,6 @@ public class PendingOrdersActivity extends AppCompatActivity {
 
                     String status = child.child("status").getValue(String.class);
 
-                    // Only orders waiting for admin approval
                     if (status == null || !status.equalsIgnoreCase("Pending")) continue;
 
                     orderList.add(OrderMapper.fromSnapshot(child));
