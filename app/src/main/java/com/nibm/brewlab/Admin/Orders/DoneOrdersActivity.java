@@ -54,8 +54,7 @@ public class DoneOrdersActivity extends AppCompatActivity {
 
                     String status = child.child("status").getValue(String.class);
 
-                    // NOTE: was checking "Completed" before, but the actual
-                    // value written everywhere else in the app is "Delivered"
+            
                     if (status == null || !status.equalsIgnoreCase("Delivered")) continue;
 
                     orderList.add(OrderMapper.fromSnapshot(child));
