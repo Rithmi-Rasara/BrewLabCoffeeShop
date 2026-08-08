@@ -68,8 +68,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         db = FirebaseFirestore.getInstance();
-        // Orders themselves live in Realtime Database - same place Customer
-        // places them and Delivery reads them from.
+        
         ordersRef = FirebaseDatabase.getInstance().getReference("Orders");
 
         orderId = getIntent().getStringExtra("orderId");
@@ -158,11 +157,6 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void assignDelivery(String deliveryId, String deliveryName) {
 
-        // NOTE: field names here must match what Delivery module
-        // (DeliveryOrder.java) actually reads: "deliveryPersonName" is a
-        // suggestion only - the delivery pool still works by any available
-        // delivery person accepting. Setting status to "Preparing" is what
-        // makes this order visible to the delivery pool at all (approval gate).
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "Preparing");
         updates.put("deliveryPersonName", deliveryName);
